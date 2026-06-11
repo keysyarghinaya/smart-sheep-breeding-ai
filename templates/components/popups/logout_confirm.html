@@ -1,0 +1,39 @@
+<div
+id="logoutModal"
+class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+
+    <div class="bg-[#003D2E] rounded-3xl p-8 w-[450px] text-center">
+
+        <i class="bi bi-box-arrow-right text-white text-7xl"></i>
+
+        <h2 class="text-white text-3xl font-semibold mt-4">
+            Logout
+        </h2>
+
+        <p class="text-white text-xl mt-4">
+            Apakah kamu yakin ingin logout?
+        </p>
+
+        <div class="flex justify-center gap-4 mt-8">
+
+            <button
+                onclick="closeLogoutModal()"
+                class="bg-white text-[#003D2E] px-6 py-3 rounded-xl font-semibold">
+
+                Tidak
+
+            </button>
+
+            <button
+                onclick="confirmLogout()"
+                class="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold">
+
+                Ya
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
