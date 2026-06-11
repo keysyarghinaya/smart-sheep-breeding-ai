@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% block title %}Histori – DombaKu{% endblock %}
+
+{% block extra_style %}
+<style>
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Toolbar ───────────────────────────────────────────────── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 9px 14px 9px 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+    transition: border-color .2s;
+  }
+  .search-wrap input:focus { border-color: var(--green-accent); }
+  .search-wrap .ico {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .count-badge {
+    background: var(--green-pale);
+    color: var(--green-accent);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid #bbf7d0;
+  }
+
+  /* ── Empty state ───────────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 64px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── Records list ──────────────────────────────────────────── */
+  .records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .record-item {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .record-item:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  /* Collapsed header */
+  .record-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    gap: 14px;
+    user-select: none;
+  }
+
+  .record-thumb {
+    width: 52px; height: 52px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    background: #f3f4f6;
+  }
+
+  .record-meta { flex: 1; min-width: 0; }
+
+  .record-id {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -.2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .id-chip {
+    background: var(--green-pale);
+    color: var(--green-accent);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 20px;
+    letter-spacing: .2px;
+  }
+
+  .id-chip.unknown {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .record-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 3px;
+  }
+
+  .record-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn-delete {
+    background: none;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 5px 11px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-delete:hover { background: #fef2f2; }
+
+  .chevron {
+    width: 20px; height: 20px;
+    color: var(--text-muted);
+    transition: transform .25s;
+    flex-shrink: 0;
+  }
+  .record-item.open .chevron { transform: rotate(180deg); }
+
+  /* Expanded detail */
+  .record-detail {
+    display: none;
+    padding: 0 18px 18px;
+    border-top: 1px solid #f3f4f6;
+  }
+  .record-item.open .record-detail { display: block; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding-top: 14px;
+  }
+
+  .detail-img {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .detail-rows { }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-row .key { color: var(--text-muted); font-weight: 500; }
+  .detail-row .val { font-weight: 700; color: var(--text-dark); text-align: right; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <a href="/dashboard" class="btn-back">←</a>
+  <h1 class="page-title">Histori <span>Breeding</span></h1>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="ico">🔍</span>
+    <input type="text" id="searchInput" placeholder="Cari ID ear tag…" oninput="filterRecords()">
+  </div>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <span class="count-badge" id="countBadge">{{ records|length }} data</span>
+    <a href="/kamera" class="btn btn-primary" style="font-size:13px; padding:8px 16px;">
+      + Scan Baru
+    </a>
+  </div>
+</div>
+
+{% if records %}
+<div class="records-list" id="recordsList">
+  {% for rec in records %}
+  <div class="record-item" id="item-{{ rec.id }}" data-tag="{{ rec.ear_tag_id|lower }}">
+
+    <!-- Header (clickable) -->
+    <div class="record-header" onclick="toggleDetail('{{ rec.id }}')">
+      <img
+        class="record-thumb"
+        src="/captures/{{ rec.filename }}"
+        alt="capture"
+        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><rect fill=%22%23f3f4f6%22 width=%2252%22 height=%2252%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 font-size=%2218%22>🐑</text></svg>'"
+      >
+      <div class="record-meta">
+        <div class="record-id">
+          ID Scan
+          {% set unknown_vals = ['OCR_NOT_AVAILABLE','OCR_ERROR','TIDAK_TERBACA',''] %}
+          {% if rec.ear_tag_id and rec.ear_tag_id not in unknown_vals %}
+            <span class="id-chip">{{ rec.ear_tag_id }}</span>
+          {% else %}
+            <span class="id-chip unknown">Tidak terbaca</span>
+          {% endif %}
+        </div>
+        <div class="record-time">{{ rec.timestamp }}</div>
+      </div>
+      <div class="record-actions">
+        <button class="btn-delete" onclick="event.stopPropagation(); deleteRecord('{{ rec.id }}')">Hapus</button>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Detail (expanded) -->
+    <div class="record-detail">
+      <div class="detail-grid">
+        <img class="detail-img" src="/captures/{{ rec.filename }}" alt="Detail capture">
+        <div class="detail-rows">
+          <div class="detail-row">
+            <span class="key">ID Ear Tag</span>
+            <span class="val">
+              {% if rec.ear_tag_id and rec.ear_tag_id not in unknown_vals %}
+                {{ rec.ear_tag_id }}
+              {% else %}
+                <em style="color:var(--text-muted);font-weight:400">Tidak terbaca</em>
+              {% endif %}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="key">Waktu Scan</span>
+            <span class="val">{{ rec.timestamp }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="key">Nama File</span>
+            <span class="val" style="font-size:12px">{{ rec.filename }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="key">OCR</span>
+            <span class="val">{{ 'Aktif' if rec.ocr_available else 'Belum install' }}</span>
+          </div>
+          {% if rec.ai_result %}
+          <div class="detail-row">
+            <span class="key">Rekomendasi AI</span>
+            <span class="val">{{ rec.ai_result }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="icon">🐑</div>
+  <h3>Belum ada data scan</h3>
+  <p>Gunakan halaman Kamera untuk mulai scan ear tag domba.</p>
+  <br>
+  <a href="/kamera" class="btn btn-primary">Buka Kamera</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  function toggleDetail(id) {
+    const item = document.getElementById('item-' + id);
+    item.classList.toggle('open');
+  }
+
+  async function deleteRecord(id) {
+    if (!confirm('Hapus data scan ini?')) return;
+    try {
+      const res = await fetch('/api/history/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        const el = document.getElementById('item-' + id);
+        el.style.opacity = '0';
+        el.style.transform = 'scale(.97)';
+        el.style.transition = 'opacity .25s, transform .25s';
+        setTimeout(() => {
+          el.remove();
+          updateCount();
+        }, 250);
+      }
+    } catch (e) {
+      alert('Gagal menghapus data.');
+    }
+  }
+
+  function filterRecords() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const items = document.querySelectorAll('.record-item');
+    let visible = 0;
+    items.forEach(item => {
+      const tag = item.dataset.tag || '';
+      const show = !q || tag.includes(q);
+      item.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('countBadge').textContent = visible + ' data';
+  }
+
+  function updateCount() {
+    const visible = document.querySelectorAll('.record-item').length;
+    document.getElementById('countBadge').textContent = visible + ' data';
+  }
+</script>
+{% endblock %}

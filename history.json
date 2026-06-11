@@ -1,0 +1,674 @@
+[
+  {
+    "id": "20260611_225708",
+    "filename": "20260611_225708.jpg",
+    "ear_tag_id": "ANY",
+    "timestamp": "11 Jun 2026, 22:57:19",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260611_225527",
+    "filename": "20260611_225527.jpg",
+    "ear_tag_id": "A",
+    "timestamp": "11 Jun 2026, 22:55:38",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260611_225505",
+    "filename": "20260611_225505.jpg",
+    "ear_tag_id": "3",
+    "timestamp": "11 Jun 2026, 22:55:17",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260611_225412",
+    "filename": "20260611_225412.jpg",
+    "ear_tag_id": "082",
+    "timestamp": "11 Jun 2026, 22:54:21",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260611_225326",
+    "filename": "20260611_225326.jpg",
+    "ear_tag_id": "MI",
+    "timestamp": "11 Jun 2026, 22:53:38",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000830",
+    "filename": "20260610_000830.jpg",
+    "ear_tag_id": "AKST",
+    "timestamp": "10 Jun 2026, 00:08:36",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000802",
+    "filename": "20260610_000802.jpg",
+    "ear_tag_id": "KAT",
+    "timestamp": "10 Jun 2026, 00:08:09",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000744",
+    "filename": "20260610_000744.jpg",
+    "ear_tag_id": "AKST7",
+    "timestamp": "10 Jun 2026, 00:07:49",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000734",
+    "filename": "20260610_000734.jpg",
+    "ear_tag_id": "AKT",
+    "timestamp": "10 Jun 2026, 00:07:39",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000722",
+    "filename": "20260610_000722.jpg",
+    "ear_tag_id": "AKS7",
+    "timestamp": "10 Jun 2026, 00:07:28",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000651",
+    "filename": "20260610_000651.jpg",
+    "ear_tag_id": "AKAT",
+    "timestamp": "10 Jun 2026, 00:06:55",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000640",
+    "filename": "20260610_000640.jpg",
+    "ear_tag_id": "AKAT",
+    "timestamp": "10 Jun 2026, 00:06:45",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000622",
+    "filename": "20260610_000622.jpg",
+    "ear_tag_id": "AKAT",
+    "timestamp": "10 Jun 2026, 00:06:28",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000523",
+    "filename": "20260610_000523.jpg",
+    "ear_tag_id": "31V",
+    "timestamp": "10 Jun 2026, 00:05:29",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000423",
+    "filename": "20260610_000423.jpg",
+    "ear_tag_id": "3",
+    "timestamp": "10 Jun 2026, 00:04:30",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000202",
+    "filename": "20260610_000202.jpg",
+    "ear_tag_id": "3V",
+    "timestamp": "10 Jun 2026, 00:02:09",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000154",
+    "filename": "20260610_000154.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "10 Jun 2026, 00:02:00",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000129",
+    "filename": "20260610_000129.jpg",
+    "ear_tag_id": "3V",
+    "timestamp": "10 Jun 2026, 00:01:36",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260610_000040",
+    "filename": "20260610_000040.jpg",
+    "ear_tag_id": "KAT",
+    "timestamp": "10 Jun 2026, 00:00:45",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235918",
+    "filename": "20260609_235918.jpg",
+    "ear_tag_id": "KAT",
+    "timestamp": "09 Jun 2026, 23:59:23",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235852",
+    "filename": "20260609_235852.jpg",
+    "ear_tag_id": "AAT",
+    "timestamp": "09 Jun 2026, 23:58:58",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235758",
+    "filename": "20260609_235758.jpg",
+    "ear_tag_id": "NDUE",
+    "timestamp": "09 Jun 2026, 23:58:05",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235641",
+    "filename": "20260609_235641.jpg",
+    "ear_tag_id": "BAD",
+    "timestamp": "09 Jun 2026, 23:56:47",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235605",
+    "filename": "20260609_235605.jpg",
+    "ear_tag_id": "555",
+    "timestamp": "09 Jun 2026, 23:56:11",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235523",
+    "filename": "20260609_235523.jpg",
+    "ear_tag_id": "405",
+    "timestamp": "09 Jun 2026, 23:55:29",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235424",
+    "filename": "20260609_235424.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:54:30",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235343",
+    "filename": "20260609_235343.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:53:49",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235025",
+    "filename": "20260609_235025.jpg",
+    "ear_tag_id": "06",
+    "timestamp": "09 Jun 2026, 23:50:29",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235023",
+    "filename": "20260609_235023.jpg",
+    "ear_tag_id": "0",
+    "timestamp": "09 Jun 2026, 23:50:24",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_235013",
+    "filename": "20260609_235013.jpg",
+    "ear_tag_id": "0R",
+    "timestamp": "09 Jun 2026, 23:50:15",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_234836",
+    "filename": "20260609_234836.jpg",
+    "ear_tag_id": "20",
+    "timestamp": "09 Jun 2026, 23:48:38",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_234747",
+    "filename": "20260609_234747.jpg",
+    "ear_tag_id": "20",
+    "timestamp": "09 Jun 2026, 23:47:49",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_234643",
+    "filename": "20260609_234643.jpg",
+    "ear_tag_id": "NOR",
+    "timestamp": "09 Jun 2026, 23:46:45",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_234600",
+    "filename": "20260609_234600.jpg",
+    "ear_tag_id": "ARO",
+    "timestamp": "09 Jun 2026, 23:46:01",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_234511",
+    "filename": "20260609_234511.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:45:13",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233954",
+    "filename": "20260609_233954.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:39:56",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233555",
+    "filename": "20260609_233555.jpg",
+    "ear_tag_id": "AIS",
+    "timestamp": "09 Jun 2026, 23:35:56",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233551",
+    "filename": "20260609_233551.jpg",
+    "ear_tag_id": "E",
+    "timestamp": "09 Jun 2026, 23:35:53",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233546",
+    "filename": "20260609_233546.jpg",
+    "ear_tag_id": "ARIS",
+    "timestamp": "09 Jun 2026, 23:35:48",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233542",
+    "filename": "20260609_233542.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:35:44",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233518",
+    "filename": "20260609_233518.jpg",
+    "ear_tag_id": "PAR",
+    "timestamp": "09 Jun 2026, 23:35:19",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233513",
+    "filename": "20260609_233513.jpg",
+    "ear_tag_id": "FAD",
+    "timestamp": "09 Jun 2026, 23:35:14",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233509",
+    "filename": "20260609_233509.jpg",
+    "ear_tag_id": "P",
+    "timestamp": "09 Jun 2026, 23:35:10",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233504",
+    "filename": "20260609_233504.jpg",
+    "ear_tag_id": "PADT",
+    "timestamp": "09 Jun 2026, 23:35:05",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233459",
+    "filename": "20260609_233459.jpg",
+    "ear_tag_id": "PAD",
+    "timestamp": "09 Jun 2026, 23:35:01",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233453",
+    "filename": "20260609_233453.jpg",
+    "ear_tag_id": "PAROD",
+    "timestamp": "09 Jun 2026, 23:34:55",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233447",
+    "filename": "20260609_233447.jpg",
+    "ear_tag_id": "PABID",
+    "timestamp": "09 Jun 2026, 23:34:48",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233442",
+    "filename": "20260609_233442.jpg",
+    "ear_tag_id": "PAO",
+    "timestamp": "09 Jun 2026, 23:34:44",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233438",
+    "filename": "20260609_233438.jpg",
+    "ear_tag_id": "PABOD",
+    "timestamp": "09 Jun 2026, 23:34:39",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233421",
+    "filename": "20260609_233421.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:34:22",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233411",
+    "filename": "20260609_233411.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:34:13",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233403",
+    "filename": "20260609_233403.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:34:04",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233358",
+    "filename": "20260609_233358.jpg",
+    "ear_tag_id": "SE",
+    "timestamp": "09 Jun 2026, 23:33:59",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233352",
+    "filename": "20260609_233352.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:33:54",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233349",
+    "filename": "20260609_233349.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:33:51",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233137",
+    "filename": "20260609_233137.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:31:38",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233134",
+    "filename": "20260609_233134.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:31:35",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233128",
+    "filename": "20260609_233128.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:31:30",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233102",
+    "filename": "20260609_233102.jpg",
+    "ear_tag_id": "EOL",
+    "timestamp": "09 Jun 2026, 23:31:04",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233058",
+    "filename": "20260609_233058.jpg",
+    "ear_tag_id": "04",
+    "timestamp": "09 Jun 2026, 23:31:00",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_233047",
+    "filename": "20260609_233047.jpg",
+    "ear_tag_id": "AOA",
+    "timestamp": "09 Jun 2026, 23:30:49",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232934",
+    "filename": "20260609_232934.jpg",
+    "ear_tag_id": "043",
+    "timestamp": "09 Jun 2026, 23:29:40",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232909",
+    "filename": "20260609_232909.jpg",
+    "ear_tag_id": "204",
+    "timestamp": "09 Jun 2026, 23:29:15",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232851",
+    "filename": "20260609_232851.jpg",
+    "ear_tag_id": "0",
+    "timestamp": "09 Jun 2026, 23:28:58",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232826",
+    "filename": "20260609_232826.jpg",
+    "ear_tag_id": "AOA",
+    "timestamp": "09 Jun 2026, 23:28:33",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232711",
+    "filename": "20260609_232711.jpg",
+    "ear_tag_id": "123",
+    "timestamp": "09 Jun 2026, 23:27:17",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232651",
+    "filename": "20260609_232651.jpg",
+    "ear_tag_id": "S2",
+    "timestamp": "09 Jun 2026, 23:26:57",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232612",
+    "filename": "20260609_232612.jpg",
+    "ear_tag_id": "PSF",
+    "timestamp": "09 Jun 2026, 23:26:19",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232520",
+    "filename": "20260609_232520.jpg",
+    "ear_tag_id": "23",
+    "timestamp": "09 Jun 2026, 23:25:28",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232209",
+    "filename": "20260609_232209.jpg",
+    "ear_tag_id": "8",
+    "timestamp": "09 Jun 2026, 23:22:17",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232154",
+    "filename": "20260609_232154.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:22:02",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232126",
+    "filename": "20260609_232126.jpg",
+    "ear_tag_id": "S",
+    "timestamp": "09 Jun 2026, 23:21:33",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232056",
+    "filename": "20260609_232056.jpg",
+    "ear_tag_id": "COL",
+    "timestamp": "09 Jun 2026, 23:21:03",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_232017",
+    "filename": "20260609_232017.jpg",
+    "ear_tag_id": "AOS",
+    "timestamp": "09 Jun 2026, 23:20:23",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231955",
+    "filename": "20260609_231955.jpg",
+    "ear_tag_id": "GON",
+    "timestamp": "09 Jun 2026, 23:20:00",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231456",
+    "filename": "20260609_231456.jpg",
+    "ear_tag_id": "TIDAK_TERBACA",
+    "timestamp": "09 Jun 2026, 23:15:02",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231439",
+    "filename": "20260609_231439.jpg",
+    "ear_tag_id": "7",
+    "timestamp": "09 Jun 2026, 23:14:46",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231340",
+    "filename": "20260609_231340.jpg",
+    "ear_tag_id": "N03",
+    "timestamp": "09 Jun 2026, 23:13:44",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231255",
+    "filename": "20260609_231255.jpg",
+    "ear_tag_id": "G08",
+    "timestamp": "09 Jun 2026, 23:12:59",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231243",
+    "filename": "20260609_231243.jpg",
+    "ear_tag_id": "204",
+    "timestamp": "09 Jun 2026, 23:12:48",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_231157",
+    "filename": "20260609_231157.jpg",
+    "ear_tag_id": "04",
+    "timestamp": "09 Jun 2026, 23:12:02",
+    "ocr_available": true,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_222117",
+    "filename": "20260609_222117.jpg",
+    "ear_tag_id": "OCR_NOT_AVAILABLE",
+    "timestamp": "09 Jun 2026, 22:21:17",
+    "ocr_available": false,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_222110",
+    "filename": "20260609_222110.jpg",
+    "ear_tag_id": "OCR_NOT_AVAILABLE",
+    "timestamp": "09 Jun 2026, 22:21:10",
+    "ocr_available": false,
+    "ai_result": null
+  },
+  {
+    "id": "20260609_221839",
+    "filename": "20260609_221839.jpg",
+    "ear_tag_id": "OCR_NOT_AVAILABLE",
+    "timestamp": "09 Jun 2026, 22:18:39",
+    "ocr_available": false,
+    "ai_result": null
+  }
+]

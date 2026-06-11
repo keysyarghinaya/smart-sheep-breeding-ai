@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DombaKu{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:   #1a3a2a;
+      --green-mid:    #1d4d35;
+      --green-accent: #2d7a4f;
+      --green-light:  #3a9e68;
+      --green-pale:   #e8f5ee;
+      --cream:        #f7f4ee;
+      --text-dark:    #111827;
+      --text-muted:   #6b7280;
+      --border:       #e5e7eb;
+      --radius:       14px;
+      --nav-h:        72px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+    }
+
+    /* ── Navbar ───────────────────────────────────────────────── */
+    .navbar {
+      height: var(--nav-h);
+      background: var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.25);
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      width: 42px; height: 42px;
+      background: rgba(255,255,255,.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid rgba(255,255,255,.2);
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.2px;
+    }
+
+    .navbar-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255,255,255,.2);
+      margin: 0 20px;
+    }
+
+    .navbar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: var(--green-accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,.3);
+    }
+
+    .btn-logout {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      color: rgba(255,255,255,.8);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── Main content ─────────────────────────────────────────── */
+    .main {
+      min-height: calc(100vh - var(--nav-h));
+      padding: 36px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Page header ──────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .btn-back {
+      width: 38px; height: 38px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      text-decoration: none;
+      color: var(--text-dark);
+      transition: background .2s, border-color .2s;
+      flex-shrink: 0;
+    }
+    .btn-back:hover { background: var(--green-pale); border-color: var(--green-accent); }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -.3px;
+    }
+    .page-title span { color: var(--green-accent); }
+
+    /* ── Shared card ──────────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* ── Shared buttons ───────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--green-dark);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--green-mid);
+      box-shadow: 0 4px 14px rgba(26,58,42,.3);
+    }
+    .btn-primary:active { transform: scale(.97); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--green-accent);
+      border: 1.5px solid var(--green-accent);
+    }
+    .btn-outline:hover { background: var(--green-pale); }
+
+    .btn-danger {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1.5px solid #fecaca;
+    }
+    .btn-danger:hover { background: #fee2e2; }
+  </style>
+  {% block extra_style %}{% endblock %}
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="navbar-brand" href="/dashboard">
+    <div class="brand-logo">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="42" r="20" fill="white" opacity=".9"/>
+        <ellipse cx="28" cy="38" rx="11" ry="13" fill="white" opacity=".8"/>
+        <ellipse cx="72" cy="38" rx="11" ry="13" fill="white" opacity=".8"/>
+        <ellipse cx="50" cy="62" rx="18" ry="14" fill="white" opacity=".85"/>
+        <circle cx="45" cy="40" r="3" fill="#1a3a2a"/>
+        <circle cx="55" cy="40" r="3" fill="#1a3a2a"/>
+        <path d="M32 65 Q50 80 68 65" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="brand-name">DombaKu</span>
+  </a>
+
+  <div class="navbar-divider"></div>
+
+  <div class="navbar-user">
+    <div class="user-avatar">{{ user_name[0] | upper if user_name else 'U' }}</div>
+    <span>{{ user_name }}</span>
+    <a href="/logout" class="btn-logout">Keluar</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+{% block extra_script %}{% endblock %}
+</body>
+</html>
