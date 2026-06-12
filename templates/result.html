@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Analisis</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body class="bg-[#003D2E] min-h-screen">
+    <div class="px-5 py-6">
+      <!-- Header -->
+      <div class="flex items-center gap-6 mb-8">
+        <button onclick="history.back()" class="w-14 h-14 rounded-full border-4 border-white flex items-center justify-center text-white text-3xl">
+          <i class="bi bi-x"></i>
+        </button>
+
+        <h1 class="text-white font-bold text-3xl">Hasil Analisis Kecocokan Domba 00123</h1>
+      </div>
+
+      <!-- CARD 1 -->
+      <div class="bg-[#E9E9E9] rounded-xl overflow-hidden mb-4">
+        <!-- Top -->
+        <div onclick="toggleCard('detail1')" class="cursor-pointer p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between">
+          <div class="space-y-2">
+            <p class="font-bold text-2xl">ID Domba 1 : 00123</p>
+
+            <p class="font-bold text-2xl">ID Domba 2 : 00678 (403)</p>
+          </div>
+
+          <div class="flex items-center gap-4 mt-4 lg:mt-0">
+            <span class="font-bold text-2xl">
+              Tingkat Kecocokan :
+              <span class="text-green-500"> 97% </span>
+            </span>
+
+            <i class="bi bi-chevron-down text-2xl"></i>
+          </div>
+        </div>
+
+        <!-- Detail -->
+        <div id="detail1" class="border-t border-gray-300 grid md:grid-cols-2">
+          <!-- kiri -->
+          <div class="p-5">
+            <h2 class="font-bold text-3xl mb-5">Detail :</h2>
+
+            <div class="space-y-3 text-xl">
+              <p><b>Kesehatan :</b> Sangat Baik (Tidak ada riwayat penyakit)</p>
+
+              <p><b>Keterangan Sehat :</b> Lulus pemeriksaan terbaru</p>
+
+              <p><b>Fisik :</b> Bulu putih bersih, tubuh proporsional, kaki kuat, mata cerah</p>
+
+              <p><b>Induk Betina :</b> Berbeda garis keturunan</p>
+
+              <p><b>Induk Jantan :</b> Berbeda garis keturunan</p>
+
+              <p><b>Kakek :</b> Tidak memiliki hubungan darah</p>
+
+              <p><b>Buyut :</b> Tidak memiliki hubungan darah</p>
+            </div>
+          </div>
+
+          <!-- kanan -->
+          <div class="p-5 border-t md:border-t-0 md:border-l border-gray-300">
+            <h2 class="font-bold text-3xl mb-5">Prediksi Anak :</h2>
+
+            <div class="space-y-3 text-xl">
+              <p><b>Kesehatan :</b> Sangat Baik</p>
+
+              <p><b>Fisik :</b> Bulu bersih, tubuh proporsional, pertumbuhan optimal</p>
+
+              <p><b>Genetik :</b> Risiko inbreeding sangat rendah</p>
+
+              <p><b>Kualitas :</b> Unggul (potensi ternak berkualitas tinggi)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="bg-[#E9E9E9] rounded-xl mb-4">
+        <div class="p-5 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-2xl">ID Domba 1 : 00123</p>
+
+            <p class="font-bold text-2xl mt-2">ID Domba 2 : 00567 (402)</p>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span class="font-bold text-2xl">
+              Tingkat Kecocokan :
+              <span class="text-green-500"> 80% </span>
+            </span>
+
+            <i class="bi bi-chevron-down text-2xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="bg-[#E9E9E9] rounded-xl">
+        <div class="p-5 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-2xl">ID Domba 1 : 00123</p>
+
+            <p class="font-bold text-2xl mt-2">ID Domba 2 : 00456 (401)</p>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span class="font-bold text-2xl">
+              Tingkat Kecocokan :
+              <span class="text-yellow-500"> 70% </span>
+            </span>
+
+            <i class="bi bi-chevron-down text-2xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleCard(id) {
+        const el = document.getElementById(id);
+
+        el.classList.toggle("hidden");
+      }
+    </script>
+  </body>
+</html>

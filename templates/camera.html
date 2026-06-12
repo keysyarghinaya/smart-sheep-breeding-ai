@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kamera - DombaKu</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body class="h-screen bg-black overflow-hidden">
+    <!-- Camera Area -->
+    <section class="relative h-[82vh] bg-black">
+      <video id="video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+    </section>
+
+    <!-- Control Area -->
+    <section class="relative h-[18vh] min-h-[130px] bg-[#E9E9E9]">
+      <!-- Cancel -->
+      <button onclick="window.history.back()" class="absolute left-4 bottom-5 bg-[#B00000] hover:bg-[#930000] text-white font-bold px-5 py-3 text-lg sm:text-xl rounded-xl shadow-lg transition">Cancel</button>
+
+      <!-- Capture -->
+      <button
+        id="captureBtn"
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#707070] shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition"
+      >
+        <i class="bi bi-camera-fill text-3xl md:text-4xl"></i>
+      </button>
+    </section>
+
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script>
+      const video = document.getElementById("video");
+
+      async function startCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: {
+                ideal: "environment",
+              },
+            },
+
+            audio: false,
+          });
+
+          video.srcObject = stream;
+        } catch (error) {
+          console.error(error);
+
+          alert("Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.");
+        }
+      }
+
+      startCamera();
+
+      const captureBtn = document.getElementById("captureBtn");
+
+      captureBtn.addEventListener("click", () => {
+        const canvas = document.getElementById("canvas");
+
+        canvas.width = video.videoWidth;
+
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        alert("Foto berhasil diambil");
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DombaKu - Input ID</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="h-screen overflow-hidden">
+    <!-- Background -->
+    <div class="fixed inset-0 bg-cover bg-center" style="background-image:url('{{ url_for('static', filename='images/bg2.jpeg') }}');"></div>
+
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-white/25 backdrop-blur-[1px]"></div>
+
+    <!-- Content -->
+    <main class="relative z-10 h-screen flex items-center justify-center px-4">
+      <div class="w-full max-w-3xl flex flex-col items-center">
+        <!-- Search Box -->
+        <div class="bg-[#D9D9D9] w-full h-32 sm:h-36 md:h-40 rounded-2xl flex items-center justify-center shadow-2xl">
+          <input type="text" placeholder="404" class="w-full bg-transparent text-center text-white font-bold text-5xl md:text-6xl outline-none" />
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-6 mt-10">
+          <button onclick="history.back()" class="bg-red-700 hover:bg-red-800 text-white font-bold px-8 py-4 rounded-xl text-xl shadow-lg">cancel</button>
+
+          <button class="bg-[#003D2E] hover:bg-[#00291f] text-white font-bold px-10 py-4 rounded-xl text-xl shadow-lg">ok</button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
