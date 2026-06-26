@@ -1,29 +1,25 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="logoutSuccess">
+<div class="popup-overlay" id="scanFailed">
 
     <div class="popup">
 
         <div class="popup-icon">
-            <i class="bi bi-check-circle"></i>
+            <i class="bi bi-upc-scan"></i>
         </div>
 
         <div class="popup-title">
-            Logout Berhasil
+            Scan Gagal
         </div>
 
         <div class="popup-message">
-            Terima kasih telah menggunakan
-            <br>
-            DombaKu.
+            Eartag tidak dapat dibaca.
+            Silakan lakukan scan kembali.
         </div>
 
-        <button
-            class="popup-btn"
-            onclick="closePopup('logoutSuccess')">
-
+        <button class="popup-btn"
+            onclick="closePopup('scanFailed')">
             OK
-
         </button>
 
     </div>

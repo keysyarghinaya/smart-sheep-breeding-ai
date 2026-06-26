@@ -18,8 +18,21 @@ def login():
 def camera():
     return render_template("camera.html")
 
-if __name__ == "__main__":
-    app.run(host="172.20.10.2", port=5000, debug=True)
+@app.route("/popup-test")
+def popup_test():
+    return render_template("popup_test.html")
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+@app.route("/loading")
+def loading():
+    return render_template("loading.html")
+
+@app.route("/error-limit")
+def error_limit():
+    return render_template("error_limit.html")
+
+@app.route("/error-general")
+def error_general():
+    return render_template("error_general.html")
+
+if __name__ == "__main__":
+    app.run(debug=True)

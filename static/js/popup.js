@@ -30,42 +30,24 @@ document.addEventListener("click", function(event) {
 
 });
 
-function openLogoutModal() {
+function confirmLogout(){
 
-    document
-        .getElementById("userMenu")
-        .classList.add("hidden");
+    closePopup("logoutConfirm");
 
-    const modal = document.getElementById("logoutModal");
+    openPopup("logoutSuccess");
 
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
+    setTimeout(function(){
 
-}
+        window.location.href="/login";
 
-function closeLogoutModal() {
-
-    const modal = document.getElementById("logoutModal");
-
-    modal.classList.remove("flex");
-    modal.classList.add("hidden");
+    },2000);
 
 }
 
-function confirmLogout() {
+function openPopup(id){
+    document.getElementById(id).style.display="flex";
+}
 
-    closeLogoutModal();
-
-    const successModal =
-        document.getElementById("logoutSuccessModal");
-
-    successModal.classList.remove("hidden");
-    successModal.classList.add("flex");
-
-    setTimeout(() => {
-
-        window.location.href = "/login";
-
-    }, 2000);
-
+function closePopup(id){
+    document.getElementById(id).style.display="none";
 }

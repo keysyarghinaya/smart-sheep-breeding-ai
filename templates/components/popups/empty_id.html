@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div class="popup-overlay" id="emptyId">
+
+    <div class="popup">
+
+         <div class="popup-icon">
+            <i class="bi bi-exclamation-circle"></i>
+        </div>
+
+        <div class="popup-title">
+            ID Kosong
+        </div>
+
+        <div class="popup-message">
+            Silakan masukkan ID terlebih dahulu.
+        </div>
+
+        <button class="popup-btn"
+            onclick="closePopup('emptyId')">
+            OK
+        </button>
+
+    </div>
+
+</div>

@@ -1,32 +1,34 @@
-<div
-id="logoutModal"
-class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-    <div class="bg-[#003D2E] rounded-3xl p-8 w-[450px] text-center">
+<div class="popup-overlay" id="logoutConfirm">
 
-        <i class="bi bi-box-arrow-right text-white text-7xl"></i>
+    <div class="popup">
 
-        <h2 class="text-white text-3xl font-semibold mt-4">
+        <div class="popup-icon">
+            <i class="bi bi-box-arrow-right"></i>
+        </div>
+
+        <div class="popup-title">
             Logout
-        </h2>
+        </div>
 
-        <p class="text-white text-xl mt-4">
+        <div class="popup-message">
             Apakah kamu yakin ingin logout?
-        </p>
+        </div>
 
-        <div class="flex justify-center gap-4 mt-8">
+        <div class="popup-buttons">
 
             <button
-                onclick="closeLogoutModal()"
-                class="bg-white text-[#003D2E] px-6 py-3 rounded-xl font-semibold">
+                class="popup-btn"
+                onclick="closePopup('logoutConfirm')">
 
                 Tidak
 
             </button>
 
             <button
-                onclick="confirmLogout()"
-                class="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold">
+                class="popup-btn popup-btn-red"
+                onclick="confirmLogout()">
 
                 Ya
 

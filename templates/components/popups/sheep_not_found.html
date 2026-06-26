@@ -1,29 +1,24 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="logoutSuccess">
+<div class="popup-overlay" id="sheepNotFound">
 
     <div class="popup">
 
         <div class="popup-icon">
-            <i class="bi bi-check-circle"></i>
+            <i class="bi bi-search"></i>
         </div>
 
         <div class="popup-title">
-            Logout Berhasil
+            Domba Tidak Ditemukan
         </div>
 
         <div class="popup-message">
-            Terima kasih telah menggunakan
-            <br>
-            DombaKu.
+            Data domba tidak ditemukan pada sistem.
         </div>
 
-        <button
-            class="popup-btn"
-            onclick="closePopup('logoutSuccess')">
-
+        <button class="popup-btn"
+            onclick="closePopup('sheepNotFound')">
             OK
-
         </button>
 
     </div>
