@@ -1,0 +1,489 @@
+from flask import Flask, render_template, Response, redirect, url_for, jsonify, request, session
+import cv2
+import os
+import threading
+import json
+from datetime import datetime
+from pathlib import Path
+import platform
+from firestore_service import get_sheep_by_eartag, get_candidate_sheep, find_best_match, get_health_record
+
+# ── OCR import (graceful fallback jika belum install) ──────────────────────────
+try:
+    import pytesseract
+    from PIL import Image
+    import subprocess
+    # Verifikasi tesseract binary tersedia
+    subprocess.run(["tesseract", "--version"], capture_output=True, check=True)
+    OCR_AVAILABLE = True
+except Exception:
+    OCR_AVAILABLE = False
+    print("[WARN] Tesseract belum terinstall.")
+    print("       Jalankan: sudo apt install -y tesseract-ocr")
+    print("                 pip install pytesseract pillow")
+
+app = Flask(__name__)
+app.secret_key = "dombaku-secret-2025"  # ganti dengan string random untuk produksi
+
+# ── Direktori ──────────────────────────────────────────────────────────────────
+CAPTURE_DIR = Path("captures")
+HISTORY_FILE = Path("history.json")
+CAPTURE_DIR.mkdir(exist_ok=True)
+
+# ── State global (dilindungi lock) ────────────────────────────────────────────
+frame_lock = threading.Lock()
+latest_frame = None
+camera = None
+camera_lock = threading.Lock()
+
+
+# ── Helper: history JSON ───────────────────────────────────────────────────────
+def load_history():
+    if HISTORY_FILE.exists():
+        with open(HISTORY_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+
+def save_history(records):
+    with open(HISTORY_FILE, "w") as f:
+        json.dump(records, f, indent=2)
+
+
+def append_history(record):
+    records = load_history()
+    records.insert(0, record)  # terbaru di atas
+    records = records[:100]    # simpan max 100 entri
+    save_history(records)
+
+
+# ── Helper: inisialisasi camera ───────────────────────────────────────────────
+def init_camera():
+    global camera
+    with camera_lock:
+        if camera is not None:
+            camera.release()
+        
+        # Auto-select backend berdasarkan OS
+        if platform.system() == "Linux":
+            cam = cv2.VideoCapture(0, cv2.CAP_V4L2)
+        else:  # Windows, macOS, dll
+            cam = cv2.VideoCapture(0)
+        
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        if cam.isOpened():
+            camera = cam
+            return True
+        return False
+
+
+# ── Frame generator (MJPEG stream) ────────────────────────────────────────────
+def generate_frames():
+    global latest_frame
+    while True:
+        with camera_lock:
+            if camera is None or not camera.isOpened():
+                break
+            success, frame = camera.read()
+
+        if not success:
+            continue
+
+        with frame_lock:
+            latest_frame = frame.copy()
+
+        ret, buffer = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        if not ret:
+            continue
+
+        yield (
+            b"--frame\r\n"
+            b"Content-Type: image/jpeg\r\n\r\n"
+            + buffer.tobytes()
+            + b"\r\n"
+        )
+
+
+# ── OCR: ekstrak ID ear tag dari gambar ───────────────────────────────────────
+def preprocess_for_ocr(image_path: str):
+    """
+    Preprocessing ringan untuk ear tag:
+    - Grayscale
+    - Resize 2x (Tesseract lebih suka gambar besar)
+    - Denoise ringan
+    - Contrast enhancement (CLAHE)
+    """
+    img = cv2.imread(image_path)
+    if img is None:
+        return None
+ 
+    # Grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ 
+    # Resize 2x — Tesseract akurasi lebih baik pada gambar lebih besar
+    h, w = gray.shape
+    gray = cv2.resize(gray, (w * 2, h * 2), interpolation=cv2.INTER_CUBIC)
+ 
+    # Denoise ringan — hilangkan noise tanpa merusak tepi karakter
+    denoised = cv2.GaussianBlur(gray, (3, 3), 0)
+ 
+    # CLAHE — tingkatkan kontras secara lokal, lebih lembut dari threshold
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(denoised)
+ 
+    # ── DEBUG: simpan hasil preprocessing agar bisa dicek ─────────────────
+    debug_path = Path(image_path).parent / ("debug_" + Path(image_path).name)
+    cv2.imwrite(str(debug_path), enhanced)
+    print(f"[DEBUG] Preprocessed image saved → {debug_path}")
+    # ──────────────────────────────────────────────────────────────────────
+ 
+    return Image.fromarray(enhanced)
+
+
+def run_ocr(image_path: str) -> str:
+    """
+    Jalankan OCR pada gambar menggunakan Tesseract.
+    Dioptimasi untuk ear tag domba (angka/huruf pendek).
+    """
+    if not OCR_AVAILABLE:
+        return "OCR_NOT_AVAILABLE"
+
+    try:
+        pil_img = preprocess_for_ocr(image_path)
+        if pil_img is None:
+            return "OCR_ERROR"
+
+        # Config Tesseract:
+        # --psm 8  = treat image as single word (cocok untuk ear tag)
+        # --psm 7  = treat as single line (alternatif)
+        # -c tessedit_char_whitelist = hanya baca angka & huruf kapital
+        config = (
+            "--psm 8 "
+            "--oem 3 "
+            "-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+
+        raw = pytesseract.image_to_string(pil_img, config=config).strip()
+
+        # Bersihkan: hapus spasi, newline, karakter aneh
+        cleaned = "".join(c for c in raw if c.isalnum()).upper()
+
+        # Filter panjang wajar ID ear tag (3–10 karakter)
+        if 3 <= len(cleaned) <= 10:
+            return cleaned
+        elif cleaned:
+            return cleaned  # kembalikan apa adanya jika di luar range
+        else:
+            return "TIDAK_TERBACA"
+
+    except Exception as e:
+        print(f"[OCR Error] {e}")
+        return "OCR_ERROR"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  ROUTES
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Auth: Login ───────────────────────────────────────────────────────────────
+@app.route("/", methods=["GET"])
+def root():
+    if session.get("logged_in"):
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+
+        # ── TODO: Ganti dengan validasi Firebase Auth ──────────────────────
+        # Sementara hardcode untuk development/testing
+        DEMO_EMAIL = "admin@dombaku.com"
+        DEMO_PASSWORD = "dombaku123"
+
+        if email == DEMO_EMAIL and password == DEMO_PASSWORD:
+            session["logged_in"] = True
+            session["user_name"] = email.split("@")[0].capitalize()
+            session["user_email"] = email
+            return redirect(url_for("dashboard"))
+        else:
+            error = "Email atau password salah."
+
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+# ── Dashboard ─────────────────────────────────────────────────────────────────
+@app.route("/dashboard")
+def dashboard():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    return render_template("dashboard.html", user_name=session.get("user_name", "Peternak"))
+
+
+# ── Halaman Kamera ────────────────────────────────────────────────────────────
+@app.route("/camera")
+def camera_page():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    
+    # Init camera hanya saat halaman kamera dibuka
+    global camera
+    if camera is None:
+        if not init_camera():
+            print("[WARN] Kamera tidak dapat diinisialisasi")
+    
+    return render_template("camera.html")
+
+
+# ── Video feed (MJPEG) ────────────────────────────────────────────────────────
+@app.route("/video_feed")
+def video_feed():
+    if not session.get("logged_in"):
+        return "Unauthorized", 401
+    return Response(
+        generate_frames(),
+        mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
+
+
+# ── Capture + OCR (AJAX endpoint) ─────────────────────────────────────────────
+@app.route("/api/capture", methods=["POST"])
+def api_capture():
+    if not session.get("logged_in"):
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+
+    with frame_lock:
+        frame = latest_frame.copy() if latest_frame is not None else None
+
+    if frame is None:
+        return jsonify({"success": False, "error": "Kamera belum siap."})
+
+    # Jalankan OCR langsung tanpa simpan gambar
+    # Generate temp path hanya untuk OCR processing
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    temp_filename = f"{timestamp}.jpg"
+    temp_filepath = str(CAPTURE_DIR / temp_filename)
+    cv2.imwrite(temp_filepath, frame)  # Simpan sementara untuk OCR
+    
+    ear_tag_id = run_ocr(temp_filepath)
+    
+    # Hapus file temp setelah OCR selesai
+    try:
+        (CAPTURE_DIR / temp_filename).unlink()
+        debug_path = CAPTURE_DIR / ("debug_" + temp_filename)
+        if debug_path.exists():
+            debug_path.unlink()
+    except Exception as e:
+        print(f"[WARN] Failed to cleanup temp files: {e}")
+    
+    return jsonify({
+        "success": True,
+        "filename": "",  # No filename since we don't save
+        "ear_tag_id": ear_tag_id,
+        "timestamp": datetime.now().strftime("%d %b %Y, %H:%M:%S"),
+        "ocr_available": OCR_AVAILABLE
+    })
+
+
+# ── Konfirmasi hasil OCR (edit/konfirmasi manual) ───────────────────────────
+@app.route("/confirm", methods=["GET"])
+def confirm():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    value = request.args.get("value", "")
+    filename = request.args.get("file", "")
+    ocr_available = request.args.get("ocr_available", "True") in ("True", "true", "1")
+    redirect_from = request.args.get("from", "")
+
+    warning = ""
+    if not ocr_available:
+        warning = "Pembaca teks otomatis tidak tersedia pada server."
+    elif value in ("OCR_NOT_AVAILABLE", "OCR_ERROR", "TIDAK_TERBACA"):
+        value = ""
+        warning = "Pembacaan otomatis gagal. Silakan koreksi atau lakukan rescan."
+    elif not value:
+        warning = ""
+
+    return render_template("confirm.html", value=value, filename=filename, warning=warning, ocr_available=ocr_available, redirect_from=redirect_from)
+
+
+@app.route("/confirm_save", methods=["POST"])
+def confirm_save():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    ear_tag = request.form.get("ear_tag", "").strip()
+    filename = request.form.get("filename", "")
+    user_name = session.get("user_name", "")
+    # Untuk sekarang gunakan user_name, tapi ideally ini harus dari farm/peternakan user
+    # TODO: Tambahkan field nama_peternak di session
+    nama_peternak = request.form.get("nama_peternak", f"Peternakan {user_name}")
+
+    if not ear_tag:
+        return redirect(url_for("confirm", 
+            value="", file=filename, warning="ID ear tag tidak boleh kosong"))
+
+    # Query domba dari Firestore
+    sheep = get_sheep_by_eartag(ear_tag, nama_peternak)
+    if sheep is None:
+        return redirect(url_for("confirm", 
+            value=ear_tag, file=filename,
+            warning="Tidak terdapat data domba dengan ID ini di peternakan Anda. Periksa kembali atau input manual."))
+
+    # Domba ditemukan — cari pasangan terbaik
+    opposite_gender = "Betina" if sheep.get("kelamin") == "Jantan" else "Jantan"
+    candidates = get_candidate_sheep(opposite_gender, nama_peternak)
+
+    if not candidates:
+        return redirect(url_for("confirm",
+            value=ear_tag, file=filename,
+            warning=f"Tidak ada domba {opposite_gender.lower()} yang tersedia untuk pasangan."))
+
+    # Find best match
+    match_result = find_best_match(sheep, candidates, nama_peternak)
+    if match_result is None:
+        return redirect(url_for("confirm",
+            value=ear_tag, file=filename,
+            warning="Tidak ada domba yang cocok (kemungkinan constraint lineage)."))
+
+    # Store recommendation ke session untuk rekomendasi page
+    session["current_sheep"] = sheep
+    session["match_result"] = {
+        "candidate_eartag": match_result["candidate"].get("eartag"),
+        "score": match_result["score"],
+        "reason": match_result["reason"]
+    }
+    session["input_filename"] = filename
+
+    return redirect(url_for("recommendation"))
+
+
+# ── Halaman Rekomendasi ───────────────────────────────────────────────────────
+@app.route("/recommendation", methods=["GET"])
+def recommendation():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    sheep = session.get("current_sheep")
+    match_result = session.get("match_result")
+
+    if not sheep or not match_result:
+        return redirect(url_for("confirm", warning="Session expired. Please rescan."))
+
+    # Ambil data candidate dari Firestore
+    candidate = get_sheep_by_eartag(match_result["candidate_eartag"], 
+                                    sheep.get("nama_peternak", ""))
+    candidate_health = get_health_record(match_result["candidate_eartag"],
+                                        sheep.get("nama_peternak", ""))
+
+    return render_template("recommendation.html",
+        sheep=sheep,
+        candidate=candidate,
+        candidate_health=candidate_health,
+        match_score=int(match_result["score"]),
+        match_reason=match_result["reason"],
+        input_filename=session.get("input_filename", ""))
+
+
+# ── Konfirmasi rekomendasi & simpan ke history ─────────────────────────────────
+@app.route("/recommendation_confirm", methods=["POST"])
+def recommendation_confirm():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    sheep = session.get("current_sheep")
+    match_result = session.get("match_result")
+    input_filename = session.get("input_filename", "")
+
+    if not sheep or not match_result:
+        return redirect(url_for("dashboard"))
+
+    # Simpan ke history/Firestore (untuk sekarang masih ke history.json)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    record = {
+        "id": timestamp,
+        "filename": input_filename if input_filename else f"{timestamp}.jpg",
+        "sheep_eartag": sheep.get("eartag"),
+        "candidate_eartag": match_result["candidate_eartag"],
+        "match_score": match_result["score"],
+        "timestamp": datetime.now().strftime("%d %b %Y, %H:%M:%S")
+    }
+
+    append_history(record)
+
+    # Clear session
+    session.pop("current_sheep", None)
+    session.pop("match_result", None)
+    session.pop("input_filename", None)
+
+    return redirect(url_for("history"))
+
+
+# ── Serve capture images ───────────────────────────────────────────────────────
+@app.route("/captures/<filename>")
+def serve_capture(filename):
+    if not session.get("logged_in"):
+        return "Unauthorized", 401
+    from flask import send_from_directory
+    return send_from_directory(str(CAPTURE_DIR), filename)
+
+
+# ── Halaman History ───────────────────────────────────────────────────────────
+@app.route("/history")
+def history():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    records = load_history()
+    return render_template("history.html", records=records)
+
+
+# ── API: ambil history sebagai JSON (untuk dashboard stats) ───────────────────
+@app.route("/history_json")
+def history_json():
+    if not session.get("logged_in"):
+        return jsonify({"records": []})
+    return jsonify({"records": load_history()})
+
+
+# ── API: hapus satu record history ────────────────────────────────────────────
+@app.route("/api/history/<record_id>", methods=["DELETE"])
+def delete_history(record_id):
+    if not session.get("logged_in"):
+        return jsonify({"success": False}), 401
+    records = load_history()
+    records = [r for r in records if r["id"] != record_id]
+    save_history(records)
+    return jsonify({"success": True})
+
+
+# ── Halaman Result ────────────────────────────────────────────────────────────
+@app.route('/result')
+def result_page():
+    return render_template('result.html')
+
+# ══════════════════════════════════════════════════════════════════════════════
+if __name__ == "__main__":
+    print("=" * 50)
+    print("  DombaKu – Smart Sheep Breeding System")
+    print("=" * 50)
+    print(f"  OCR Status : {'✓ Tesseract siap' if OCR_AVAILABLE else '✗ Belum install (sudo apt install tesseract-ocr)'}")
+    print(f"  Akses di   : http://localhost:5000")
+    print(f"  Login demo : admin@dombaku.com / dombaku123")
+    print("=" * 50)
+    print("  Kamera akan diinisialisasi saat halaman camera dibuka")
+    print("=" * 50)
+
+    app.run(host="0.0.0.0", port=5000, threaded=True)

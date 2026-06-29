@@ -1,77 +1,415 @@
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kamera - DombaKu</title>
+{% extends "base.html" %}
+{% block title %}Kamera – DombaKu{% endblock %}
 
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block extra_style %}
+<style>
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  </head>
+  /* ── Layout kamera ─────────────────────────────────────────── */
+  .camera-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+  }
 
-  <body class="h-screen bg-black overflow-hidden">
-    <!-- Camera Area -->
-    <section class="relative h-[82vh] bg-black">
-      <video id="video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-    </section>
+  /* ── Stream box ────────────────────────────────────────────── */
+  .stream-card {
+    background: #000;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #222;
+    aspect-ratio: 16/9;
+  }
 
-    <!-- Control Area -->
-    <section class="relative h-[18vh] min-h-[130px] bg-[#E9E9E9]">
-      <!-- Cancel -->
-      <button onclick="window.history.back()" class="absolute left-4 bottom-5 bg-[#B00000] hover:bg-[#930000] text-white font-bold px-5 py-3 text-lg sm:text-xl rounded-xl shadow-lg transition">Cancel</button>
+  .stream-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 
-      <!-- Capture -->
-      <button
-        id="captureBtn"
-        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full bg-[#707070] shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition"
-      >
-        <i class="bi bi-camera-fill text-3xl md:text-4xl"></i>
-      </button>
-    </section>
+  /* Scan overlay frame */
+  .scan-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
 
-    <canvas id="canvas" class="hidden"></canvas>
+  .scan-corner {
+    position: absolute;
+    width: 36px; height: 36px;
+    border-color: #3a9e68;
+    border-style: solid;
+    border-width: 0;
+  }
+  .scan-corner.tl { top:20px; left:20px; border-top-width:3px; border-left-width:3px; border-radius: 4px 0 0 0; }
+  .scan-corner.tr { top:20px; right:20px; border-top-width:3px; border-right-width:3px; border-radius: 0 4px 0 0; }
+  .scan-corner.bl { bottom:20px; left:20px; border-bottom-width:3px; border-left-width:3px; border-radius: 0 0 0 4px; }
+  .scan-corner.br { bottom:20px; right:20px; border-bottom-width:3px; border-right-width:3px; border-radius: 0 0 4px 0; }
 
-    <script>
-      const video = document.getElementById("video");
+  .scan-line {
+    position: absolute;
+    left: 24px; right: 24px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #3a9e68, transparent);
+    animation: scanMove 2.5s ease-in-out infinite;
+    top: 20px;
+  }
 
-      async function startCamera() {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: {
-                ideal: "environment",
-              },
-            },
+  @keyframes scanMove {
+    0%   { top: 20px; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: calc(100% - 20px); opacity: 0; }
+  }
 
-            audio: false,
-          });
+  /* Status badge */
+  .stream-status {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,.65);
+    backdrop-filter: blur(4px);
+    color: #3a9e68;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(58,158,104,.4);
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
 
-          video.srcObject = stream;
-        } catch (error) {
-          console.error(error);
+  .stream-status .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: #3a9e68;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: blink 1.2s infinite;
+  }
 
-          alert("Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.");
-        }
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: .2; }
+  }
+
+  /* ── Side panel ────────────────────────────────────────────── */
+  .side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Capture button */
+  .btn-capture {
+    width: 100%;
+    padding: 18px;
+    background: var(--green-dark);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background .2s, transform .1s, box-shadow .2s;
+    box-shadow: 0 6px 20px rgba(26,58,42,.25);
+    letter-spacing: .2px;
+    text-decoration: none;
+  }
+  .btn-capture:hover {
+    background: var(--green-mid);
+    box-shadow: 0 10px 28px rgba(26,58,42,.35);
+  }
+  .btn-capture:active { transform: scale(.97); }
+  .btn-capture:disabled {
+    background: #9ca3af;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .btn-capture svg {
+    width: 22px; height: 22px;
+    stroke: white; fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Result card */
+  .result-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .result-card.visible { display: block; }
+
+  .result-header {
+    background: var(--green-dark);
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+
+  .result-body { padding: 16px; }
+
+  .result-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+  }
+  .result-row:last-child { border-bottom: none; }
+
+  .result-key {
+    color: var(--text-muted);
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+
+  .result-val {
+    font-weight: 700;
+    color: var(--text-dark);
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .badge-id {
+    background: var(--green-pale);
+    color: var(--green-accent);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .3px;
+  }
+
+  .badge-warn {
+    background: #fef9c3;
+    color: #92400e;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* Loading state */
+  .loading-state {
+    display: none;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+  .loading-state.visible { display: block; }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--green-pale);
+    border-top-color: var(--green-accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-state p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* Info box */
+  .info-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: #166534;
+    line-height: 1.5;
+  }
+  .info-box .warn { color: #92400e; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <a href="/dashboard" class="btn-back">←</a>
+  <h1 class="page-title"><span>Kamera</span> – Scan Ear Tag</h1>
+</div>
+
+<div class="camera-layout">
+
+  <!-- Live stream -->
+  <div class="stream-card">
+    <img src="/video_feed" alt="Live Camera Feed" id="streamImg">
+    <div class="scan-overlay">
+      <div class="scan-corner tl"></div>
+      <div class="scan-corner tr"></div>
+      <div class="scan-corner bl"></div>
+      <div class="scan-corner br"></div>
+      <div class="scan-line"></div>
+    </div>
+    <div class="stream-status">
+      <span class="dot"></span> LIVE
+    </div>
+  </div>
+
+  <!-- Side panel -->
+  <div class="side-panel">
+
+    <!-- Capture button -->
+    <a href="/confirm" class="btn-capture">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+      </svg>
+      Input Manual
+    </a>
+
+    <!-- Capture button -->
+    <button class="btn-capture" id="btnCapture" onclick="doCapture()">
+      <svg viewBox="0 0 24 24">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      Capture & Scan
+    </button>
+
+    <!-- Info OCR -->
+    <div class="info-box" id="ocrStatus">
+      Arahkan ear tag domba ke kamera, lalu tekan <strong>Capture & Scan</strong> untuk membaca ID.
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p>Mengambil gambar &amp; membaca ear tag…</p>
+    </div>
+
+    <!-- Result -->
+    <div class="result-card" id="resultCard">
+      <div class="result-header">📋 Hasil Scan</div>
+      <div class="result-body">
+        <img src="" alt="Hasil Capture" class="result-image" id="resultImg">
+        <div class="result-row">
+          <span class="result-key">ID Ear Tag</span>
+          <span class="result-val" id="resEarTag">–</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">Waktu</span>
+          <span class="result-val" id="resTime">–</span>
+        </div>
+        <div class="result-row">
+          <span class="result-key">File</span>
+          <span class="result-val" id="resFile">–</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  async function doCapture() {
+    const btn = document.getElementById('btnCapture');
+    const loading = document.getElementById('loadingState');
+    const result = document.getElementById('resultCard');
+    const ocrInfo = document.getElementById('ocrStatus');
+
+    btn.disabled = true;
+    loading.classList.add('visible');
+    result.classList.remove('visible');
+    ocrInfo.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/capture', { method: 'POST' });
+      const data = await res.json();
+
+      if (data.success) {
+        // Redirect user to confirmation page so they can edit/confirm OCR result
+        const params = new URLSearchParams();
+        params.set('value', data.ear_tag_id || '');
+        params.set('file', data.filename || '');
+        params.set('ocr_available', data.ocr_available ? 'True' : 'False');
+        params.set('from', 'capture');
+        window.location = '/confirm?' + params.toString();
+        return;
+      } else {
+        ocrInfo.style.display = 'block';
+        ocrInfo.innerHTML = `<span class="warn">⚠ ${data.error || 'Capture gagal.'}</span>`;
       }
+    } catch (err) {
+      ocrInfo.style.display = 'block';
+      ocrInfo.innerHTML = '<span class="warn">⚠ Gagal terhubung ke server.</span>';
+    } finally {
+      loading.classList.remove('visible');
+      btn.disabled = false;
+    }
+  }
 
-      startCamera();
+  // Keyboard shortcut: Spasi = capture
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT') {
+      e.preventDefault();
+      doCapture();
+    }
+  });
 
-      const captureBtn = document.getElementById("captureBtn");
+  // Ensure camera is released when user leaves or hides the page
+  function stopCamera() {
+    try {
+      // Use navigator.sendBeacon when available for reliable unload delivery
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/camera_stop');
+        return;
+      }
+      // Fallback to fetch with keepalive
+      fetch('/camera_stop', { method: 'POST', keepalive: true }).catch(() => {});
+    } catch (e) {
+      // ignore
+    }
+  }
 
-      captureBtn.addEventListener("click", () => {
-        const canvas = document.getElementById("canvas");
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopCamera();
+  });
 
-        canvas.width = video.videoWidth;
-
-        canvas.height = video.videoHeight;
-
-        const ctx = canvas.getContext("2d");
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        alert("Foto berhasil diambil");
-      });
-    </script>
-  </body>
-</html>
+  window.addEventListener('pagehide', () => stopCamera());
+  window.addEventListener('beforeunload', () => stopCamera());
+</script>
+{% endblock %}

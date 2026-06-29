@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}Rekomendasi Pasangan – DombaKu{% endblock %}
+
+{% block extra_style %}
+<style>
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .rec-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .score-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .score-badge {
+    background: linear-gradient(135deg, #3a9e68 0%, #2d7a52 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 32px;
+    font-weight: 800;
+  }
+
+  .score-badge .percent {
+    font-size: 24px;
+  }
+
+  .score-label {
+    font-size: 16px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .recommendation-card {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .card-header {
+    background: var(--green-dark);
+    color: white;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .card-body {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .card-body { grid-template-columns: 1fr; }
+  }
+
+  .sheep-info {
+    display: flex;
+    gap: 16px;
+  }
+
+  .sheep-photo {
+    width: 120px;
+    height: 120px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+  }
+
+  .sheep-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .sheep-details {
+    flex: 1;
+  }
+
+  .sheep-id {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+  }
+
+  .detail-item {
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .detail-item:last-child { border-bottom: none; }
+
+  .detail-key {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .detail-val {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .reason-box {
+    background: #f0fdf4;
+    border-left: 4px solid var(--green-accent);
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+
+  .reason-box strong {
+    color: var(--green-dark);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-confirm {
+    background: var(--green-dark);
+    color: white;
+  }
+
+  .btn-confirm:hover {
+    background: var(--green-mid);
+    box-shadow: 0 6px 20px rgba(26,58,42,.3);
+  }
+
+  .btn-rescan {
+    background: #e5e7eb;
+    color: var(--text-dark);
+  }
+
+  .btn-rescan:hover {
+    background: #d1d5db;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <a href="/dashboard" class="btn-back">←</a>
+  <h1 class="page-title">Rekomendasi Pasangan Kawin</h1>
+</div>
+
+<div class="rec-container">
+  <!-- Score Display -->
+  <div class="score-display">
+    <div class="score-badge">
+      {{ match_score }}<span class="percent">%</span>
+    </div>
+    <div class="score-label">Tingkat Kecocokan</div>
+  </div>
+
+  <!-- Main Recommendation Card -->
+  <div class="recommendation-card">
+    <div class="card-header">
+      Pasangan Terbaik untuk Domba #{{ sheep.eartag }}
+    </div>
+
+    <div class="card-body">
+      <!-- Sheep Info -->
+      <div>
+        <h3 style="margin-bottom: 16px; font-weight: 800; color: var(--text-dark);">Domba Pilihan</h3>
+        
+        <div class="sheep-info">
+          <div class="sheep-photo">
+              🐑
+          </div>
+
+          <div class="sheep-details">
+            <div class="sheep-id">#{{ sheep.eartag }}</div>
+            
+            <div class="detail-item">
+              <div class="detail-key">Jenis Kelamin</div>
+              <div class="detail-val">{{ sheep.kelamin }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Kesehatan</div>
+              <div class="detail-val">{{ sheep.kesehatan }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Tanggal Lahir</div>
+              <div class="detail-val">{{ sheep.tanggal_lahir }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Bobot Badan</div>
+              <div class="detail-val">{{ sheep.bobot_badan }} kg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Candidate Info -->
+      <div>
+        <h3 style="margin-bottom: 16px; font-weight: 800; color: var(--text-dark);">Pasangan Rekomendasi</h3>
+        
+        <div class="sheep-info">
+          <div class="sheep-photo">
+              🐑
+          </div>
+
+          <div class="sheep-details">
+            <div class="sheep-id">#{{ candidate.eartag if candidate else 'N/A' }}</div>
+            
+            <div class="detail-item">
+              <div class="detail-key">Jenis Kelamin</div>
+              <div class="detail-val">{{ candidate.kelamin if candidate else 'N/A' }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Kesehatan</div>
+              <div class="detail-val">{{ candidate_health.kesehatan if candidate_health else candidate.kesehatan if candidate else 'N/A' }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Tanggal Lahir</div>
+              <div class="detail-val">{{ candidate.tanggal_lahir if candidate else 'N/A' }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-key">Bobot Badan</div>
+              <div class="detail-val">{{ candidate.bobot_badan if candidate else 'N/A' }} kg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reason -->
+    <div style="padding: 0 24px 24px;">
+      <div class="reason-box">
+        <strong>Alasan Pemilihan:</strong><br>
+        {{ match_reason }}
+      </div>
+
+      <!-- Actions -->
+      <div class="button-group">
+        <form action="/recommendation_confirm" method="post" style="flex: 1;">
+          <button type="submit" class="btn btn-confirm" style="width: 100%;">Lanjutkan dengan Pasangan Ini</button>
+        </form>
+        <a href="/camera" class="btn btn-rescan" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Rescan Domba Lain</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
