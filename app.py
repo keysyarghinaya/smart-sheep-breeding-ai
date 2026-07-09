@@ -6,8 +6,7 @@ from pathlib import Path
 from firestore_service import (
     get_sheep_by_eartag,
     get_candidate_sheep,
-    find_best_match,
-    get_health_record,
+    get_top_matches,
     get_user_by_email,
 )
 
@@ -26,6 +25,7 @@ app = Flask(__name__)
 app.secret_key = "dombaku-secret-2025"
 
 HISTORY_FILE = Path("history.json")
+TOP_MATCH_LIMIT = 5
 
 
 def load_history():
@@ -236,16 +236,21 @@ def confirm_save():
     if not candidates:
         return redirect(url_for("confirm", value=ear_tag, file=filename, warning=f"Tidak ada domba {opposite_gender.lower()} yang tersedia untuk pasangan."))
 
-    match_result = find_best_match(sheep, candidates, nama_peternak)
-    if match_result is None:
+    ranked_matches = get_top_matches(sheep, candidates, nama_peternak, limit=TOP_MATCH_LIMIT)
+    if not ranked_matches:
         return redirect(url_for("confirm", value=ear_tag, file=filename, warning="Tidak ada domba yang cocok (kemungkinan constraint lineage)."))
 
     session["current_sheep"] = sheep
-    session["match_result"] = {
-        "candidate_eartag": match_result["candidate"].get("eartag"),
-        "score": match_result["score"],
-        "reason": match_result["reason"],
-    }
+    session["match_results"] = [
+        {
+            "candidate_eartag": str(match_result["candidate"].get("eartag")),
+            "score": match_result["score"],
+            "reason": match_result["reason"],
+            "breakdown": match_result.get("breakdown", {}),
+        }
+        for match_result in ranked_matches
+    ]
+    session["match_result"] = session["match_results"][0]
     session["input_filename"] = filename
 
     return redirect(url_for("recommendation"))
@@ -257,22 +262,33 @@ def recommendation():
         return redirect(url_for("login"))
 
     sheep = session.get("current_sheep")
-    match_result = session.get("match_result")
+    match_results = session.get("match_results") or ([] if session.get("match_result") is None else [session.get("match_result")])
 
-    if not sheep or not match_result:
+    if not sheep or not match_results:
         return redirect(url_for("confirm", warning="Session expired. Please rescan."))
 
     nama_peternak = session.get("nama_peternak", sheep.get("nama_peternak", ""))
-    candidate = get_sheep_by_eartag(match_result["candidate_eartag"], nama_peternak)
-    candidate_health = get_health_record(match_result["candidate_eartag"], nama_peternak)
+    candidates = []
+
+    for match_result in match_results:
+        candidate_eartag = str(match_result["candidate_eartag"])
+        candidate = get_sheep_by_eartag(candidate_eartag, nama_peternak)
+        candidates.append({
+            "candidate": candidate,
+            "candidate_eartag": candidate_eartag,
+            "score": int(match_result["score"]),
+            "reason": match_result.get("reason", ""),
+            "breakdown": match_result.get("breakdown", {}),
+        })
+
+    selected_candidate_eartag = candidates[0]["candidate_eartag"] if candidates else ""
 
     return render_template(
         "recommendation.html",
         sheep=sheep,
-        candidate=candidate,
-        candidate_health=candidate_health,
-        match_score=int(match_result["score"]),
-        match_reason=match_result["reason"],
+        candidates=candidates,
+        selected_candidate_eartag=selected_candidate_eartag,
+        top_match_count=len(candidates),
         input_filename=session.get("input_filename", ""),
     )
 
@@ -283,25 +299,37 @@ def recommendation_confirm():
         return redirect(url_for("login"))
 
     sheep = session.get("current_sheep")
-    match_result = session.get("match_result")
+    match_results = session.get("match_results") or ([] if session.get("match_result") is None else [session.get("match_result")])
     input_filename = session.get("input_filename", "")
+    selected_candidate_eartag = request.form.get("candidate_eartag", "").strip()
 
-    if not sheep or not match_result:
+    if not sheep or not match_results:
         return redirect(url_for("dashboard"))
+
+    selected_match = None
+    if selected_candidate_eartag:
+        for match_result in match_results:
+            if str(match_result.get("candidate_eartag")) == selected_candidate_eartag:
+                selected_match = match_result
+                break
+
+    if selected_match is None:
+        selected_match = match_results[0]
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     record = {
         "id": timestamp,
         "filename": input_filename if input_filename else f"{timestamp}.jpg",
         "sheep_eartag": sheep.get("eartag"),
-        "candidate_eartag": match_result["candidate_eartag"],
-        "match_score": match_result["score"],
+        "candidate_eartag": selected_match["candidate_eartag"],
+        "match_score": selected_match["score"],
         "timestamp": datetime.now().strftime("%d %b %Y, %H:%M:%S"),
     }
 
     append_history(record)
 
     session.pop("current_sheep", None)
+    session.pop("match_results", None)
     session.pop("match_result", None)
     session.pop("input_filename", None)
 

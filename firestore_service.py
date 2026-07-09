@@ -241,43 +241,72 @@ def calculate_matching_score(sheep1: Dict, sheep2: Dict, health2: Optional[Dict]
     return min(total, 100)
 
 
+def calculate_matching_breakdown(sheep1: Dict, sheep2: Dict, health2: Optional[Dict]) -> Dict[str, float]:
+    """
+    Return skor per komponen agar bisa divisualisasikan di UI.
+    """
+    health_score = score_health(sheep2, health2)
+    physical_score = score_physical(sheep2)
+    genetic_score = score_genetic_diversity(sheep1, sheep2)
+
+    total = min(health_score + physical_score + genetic_score, 100)
+    return {
+        "health": health_score,
+        "physical": physical_score,
+        "genetic": genetic_score,
+        "total": total,
+    }
+
+
+def get_top_matches(sheep: Dict, candidates: List[Dict], nama_peternak: str, limit: int = 5) -> List[Dict]:
+    """
+    Return beberapa kandidat terbaik yang sudah diurutkan dari skor tertinggi.
+    """
+    ranked_matches = []
+
+    for candidate in candidates:
+        if candidate.get("eartag") == sheep.get("eartag"):
+            continue
+
+        has_conflict, _ = calculate_lineage_conflict(sheep, candidate)
+        if has_conflict:
+            continue
+
+        health_record = get_health_record(candidate.get("eartag"), nama_peternak)
+        breakdown = calculate_matching_breakdown(sheep, candidate, health_record)
+
+        ranked_matches.append({
+            "candidate": candidate,
+            "score": breakdown["total"],
+            "reason": f"Kesehatan {breakdown['health']:.0f}/40, Fisik {breakdown['physical']:.0f}/30, Genetik {breakdown['genetic']:.0f}/30",
+            "breakdown": breakdown,
+            "health_record": health_record,
+        })
+
+    ranked_matches.sort(
+        key=lambda item: (
+            item["score"],
+            str(item["candidate"].get("eartag", "")),
+        ),
+        reverse=True,
+    )
+    return ranked_matches[:limit]
+
+
 def find_best_match(sheep: Dict, candidates: List[Dict], nama_peternak: str) -> Optional[Dict]:
     """
     Find best matching candidate untuk sheep.
     Returns: {candidate_data, score, reason}
     """
-    if not candidates:
+    top_matches = get_top_matches(sheep, candidates, nama_peternak, limit=1)
+    if not top_matches:
         return None
     
-    best_match = None
-    best_score = -1
-    best_reason = ""
-    
-    for candidate in candidates:
-        # Skip diri sendiri
-        if candidate.get("eartag") == sheep.get("eartag"):
-            continue
-        
-        # Check lineage conflict
-        has_conflict, conflict_reason = calculate_lineage_conflict(sheep, candidate)
-        if has_conflict:
-            continue  # Skip jika ada conflict
-        
-        # Calculate score
-        health_record = get_health_record(candidate.get("eartag"), nama_peternak)
-        score = calculate_matching_score(sheep, candidate, health_record)
-        
-        if score > best_score:
-            best_score = score
-            best_match = candidate
-            best_reason = f"Kesehatan: {score_health(candidate, health_record):.0f}, Fisik: {score_physical(candidate):.0f}, Genetik: {score_genetic_diversity(sheep, candidate):.0f}"
-    
-    if best_match is None:
-        return None
-    
+    best_match = top_matches[0]
     return {
-        "candidate": best_match,
-        "score": best_score,
-        "reason": best_reason,
-        "health_record": get_health_record(best_match.get("eartag"), nama_peternak)
+        "candidate": best_match["candidate"],
+        "score": best_match["score"],
+        "reason": best_match["reason"],
+        "breakdown": best_match["breakdown"],
+        "health_record": best_match["health_record"],
     }
