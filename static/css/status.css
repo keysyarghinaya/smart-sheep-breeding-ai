@@ -1,0 +1,85 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+
+    background:#003D2E;
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+.container{
+
+    text-align:center;
+
+    color:white;
+
+}
+
+.icon{
+
+    font-size:180px;
+
+}
+
+.logo{
+
+    width:180px;
+    height:180px;
+
+    object-fit:contain;
+
+    animation:pulse 1.5s infinite;
+
+}
+
+.title{
+
+    margin-top:35px;
+
+    font-size:52px;
+
+    font-weight:600;
+
+}
+
+.message{
+
+    margin-top:25px;
+
+    font-size:38px;
+
+    line-height:1.5;
+
+}
+
+@keyframes pulse{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.08);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}

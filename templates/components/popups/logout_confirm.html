@@ -1,8 +1,13 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="logoutConfirm">
+<div
+    class="popup-overlay"
+    id="logoutConfirm"
+    onclick="closePopup('logoutConfirm')">
 
-    <div class="popup">
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
 
         <div class="popup-icon">
             <i class="bi bi-box-arrow-right"></i>
@@ -33,7 +38,7 @@
                 Ya
 
             </button>
-
+            
         </div>
 
     </div>

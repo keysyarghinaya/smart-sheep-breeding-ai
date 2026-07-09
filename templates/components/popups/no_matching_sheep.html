@@ -1,8 +1,13 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="matchingSheep">
+<div
+    class="popup-overlay"
+    id="matchingSheep"
+    onclick="closePopup('matchingSheep')">
 
-    <div class="popup">
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
 
         <div class="popup-icon">
             <i class="bi bi-search"></i>

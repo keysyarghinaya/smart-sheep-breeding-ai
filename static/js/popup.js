@@ -51,3 +51,24 @@ function openPopup(id){
 function closePopup(id){
     document.getElementById(id).style.display="none";
 }
+
+document.addEventListener("keydown", function(e){
+
+    if(e.key === "Escape"){
+
+        const popups =
+            document.querySelectorAll(".popup-overlay");
+
+        popups.forEach(function(popup){
+
+            if(popup.style.display === "flex"){
+
+                popup.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+});

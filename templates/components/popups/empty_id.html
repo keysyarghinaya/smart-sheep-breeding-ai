@@ -1,10 +1,15 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="emptyId">
+<div
+    class="popup-overlay"
+    id="emptyId"
+    onclick="closePopup('emptyId')">
 
-    <div class="popup">
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
 
-         <div class="popup-icon">
+        <div class="popup-icon">
             <i class="bi bi-exclamation-circle"></i>
         </div>
 

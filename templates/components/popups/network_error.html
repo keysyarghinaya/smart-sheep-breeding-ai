@@ -1,8 +1,13 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
 
-<div class="popup-overlay" id="networkError">
+<div
+    class="popup-overlay"
+    id="networkError"
+    onclick="closePopup('networkError')">
 
-    <div class="popup">
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
 
         <div class="popup-icon">
             <i class="bi bi-wifi-off"></i>
