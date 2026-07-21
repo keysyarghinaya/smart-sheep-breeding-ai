@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    margin-bottom: 28px;
+    margin-bottom: 18px;
   }
 
   .rec-container {
@@ -15,58 +15,129 @@
     margin: 0 auto;
   }
 
-  .score-display {
+  .intro-strip {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(26,58,42,.08), rgba(45,122,79,.12));
+    border: 1px solid rgba(45,122,79,.18);
+    border-radius: 18px;
   }
 
-  .score-badge {
-    background: linear-gradient(135deg, #3a9e68 0%, #2d7a52 100%);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 32px;
+  .intro-title {
+    font-size: 18px;
     font-weight: 800;
+    color: var(--text-dark);
   }
 
-  .score-badge .percent {
-    font-size: 24px;
-  }
-
-  .score-label {
-    font-size: 16px;
+  .intro-subtitle {
+    margin-top: 4px;
     color: var(--text-muted);
-    font-weight: 500;
+    font-size: 14px;
   }
 
-  .recommendation-card {
+  .intro-badge {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: var(--green-dark);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .recommendation-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .option-card {
+    display: block;
+    position: relative;
     background: #fff;
-    border: 2px solid var(--border);
-    border-radius: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 22px;
     overflow: hidden;
-    margin-bottom: 24px;
+    box-shadow: 0 16px 32px rgba(17,24,39,.06);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    cursor: pointer;
+  }
+
+  .option-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px rgba(17,24,39,.10);
+  }
+
+  .option-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .option-shell {
+    border: 2px solid transparent;
+    border-radius: 22px;
+  }
+
+  .option-card input:checked ~ .option-shell {
+    border-color: var(--green-accent);
+    box-shadow: inset 0 0 0 1px rgba(45,122,79,.08);
   }
 
   .card-header {
-    background: var(--green-dark);
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
     color: white;
     padding: 16px 20px;
     font-size: 18px;
     font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .card-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .rank-pill {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .score-display {
+    font-size: 15px;
+    font-weight: 800;
+    background-color: rgba(255,255,255,.14);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 999px;
   }
 
   .card-body {
     padding: 24px;
+  }
+  
+  .card-body .candidate-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 22px;
   }
 
   @media (max-width: 768px) {
-    .card-body { grid-template-columns: 1fr; }
+    .card-body .candidate-container { grid-template-columns: 1fr; }
   }
 
   .sheep-info {
@@ -75,8 +146,8 @@
   }
 
   .sheep-photo {
-    width: 120px;
-    height: 120px;
+    width: 112px;
+    height: 112px;
     background: #f0f0f0;
     border-radius: 12px;
     flex-shrink: 0;
@@ -105,17 +176,25 @@
     margin-bottom: 12px;
   }
 
-  .detail-item {
-    padding: 8px 0;
-    font-size: 14px;
-    border-bottom: 1px solid #f0f0f0;
+  .detail-grid {
+    display: grid;
+    gap: 10px;
   }
 
-  .detail-item:last-child { border-bottom: none; }
+  .detail-item {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #edf0eb;
+    border-radius: 12px;
+    background: #fafcf9;
+  }
 
   .detail-key {
     color: var(--text-muted);
     font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
   }
 
   .detail-val {
@@ -124,25 +203,81 @@
     margin-top: 2px;
   }
 
-  .reason-box {
-    background: #f0fdf4;
-    border-left: 4px solid var(--green-accent);
+  .chart-panel {
+    background: linear-gradient(180deg, #f8fbf8 0%, #ffffff 100%);
+    border: 1px solid #e7eee8;
+    border-radius: 18px;
     padding: 16px;
-    border-radius: 8px;
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 336px;
   }
 
-  .reason-box strong {
+  .chart-title {
+    font-size: 16px;
+    font-weight: 800;
     color: var(--green-dark);
+    margin-bottom: 12px;
+    align-self: flex-start;
+  }
+
+  .chart-box {
+    width: 100%;
+    max-width: 170px;
+    min-height: 170px;
+  }
+
+  .chart-legend {
+    width: 100%;
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .legend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .legend-label {
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .legend-value {
+    font-weight: 800;
+    color: var(--green-dark);
+  }
+
+  .card-note {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
+    background-color: var(--green-dark);
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: #fff;
+    text-align: center;
   }
 
   .button-group {
     display: flex;
     gap: 12px;
     margin-top: 24px;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
-  .btn {
+  .btn-action {
     flex: 1;
     padding: 14px 20px;
     border: none;
@@ -171,6 +306,12 @@
   .btn-rescan:hover {
     background: #d1d5db;
   }
+
+  .selection-hint {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
 </style>
 {% endblock %}
 
@@ -182,108 +323,193 @@
 </div>
 
 <div class="rec-container">
-  <!-- Score Display -->
-  <div class="score-display">
-    <div class="score-badge">
-      {{ match_score }}<span class="percent">%</span>
+  <div class="intro-strip">
+    <div>
+      <div class="intro-title">{{ top_match_count }} kandidat terbaik untuk Domba #{{ sheep.eartag }}</div>
+      <div class="intro-subtitle">Pilih salah satu opsi di bawah. Donut chart menampilkan total skor serta pecahan skor per komponen.</div>
     </div>
-    <div class="score-label">Tingkat Kecocokan</div>
+    <div class="intro-badge">Urut dari skor tertinggi</div>
   </div>
 
-  <!-- Main Recommendation Card -->
-  <div class="recommendation-card">
-    <div class="card-header">
-      Pasangan Terbaik untuk Domba #{{ sheep.eartag }}
-    </div>
-
-    <div class="card-body">
-      <!-- Sheep Info -->
-      <div>
-        <h3 style="margin-bottom: 16px; font-weight: 800; color: var(--text-dark);">Domba Pilihan</h3>
-        
-        <div class="sheep-info">
-          <div class="sheep-photo">
-              🐑
+  <form action="/recommendation_confirm" method="post">
+    <div class="recommendation-stack">
+      {% for item in candidates %}
+      <label class="option-card">
+        <input
+          type="radio"
+          name="candidate_eartag"
+          value="{{ item.candidate_eartag }}"
+          {% if item.candidate_eartag == selected_candidate_eartag %}checked{% endif %}
+          required
+        >
+        <div class="option-shell">
+          <div class="card-header">
+            <div>Pasangan #{{ item.candidate.eartag if item.candidate else item.candidate_eartag }}</div>
+            <div class="card-header-right">
+              <div class="rank-pill">#{{ loop.index }} teratas</div>
+              <div class="score-display">{{ item.score }} / 100</div>
+            </div>
           </div>
 
-          <div class="sheep-details">
-            <div class="sheep-id">#{{ sheep.eartag }}</div>
-            
-            <div class="detail-item">
-              <div class="detail-key">Jenis Kelamin</div>
-              <div class="detail-val">{{ sheep.kelamin }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Kesehatan</div>
-              <div class="detail-val">{{ sheep.kesehatan }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Tanggal Lahir</div>
-              <div class="detail-val">{{ sheep.tanggal_lahir }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Bobot Badan</div>
-              <div class="detail-val">{{ sheep.bobot_badan }} kg</div>
+          <div class="card-body">
+            <h3 style="margin-bottom: 16px; font-weight: 800; color: var(--text-dark);">Detail Kandidat</h3>
+            <div class="candidate-container">
+              <div>
+                <div class="sheep-info">
+                  <div class="sheep-details">
+                    <div class="detail-grid">
+                      <div class="detail-item">
+                        <div class="detail-key">Jenis Kelamin</div>
+                        <div class="detail-val">{{ item.candidate.kelamin if item.candidate else 'N/A' }}</div>
+                      </div>
+  
+                      <div class="detail-item">
+                        <div class="detail-key">Kesehatan</div>
+                        <div class="detail-val">{{ item.candidate.kesehatan if item.candidate else 'N/A' }}</div>
+                      </div>
+  
+                      <div class="detail-item">
+                        <div class="detail-key">Tanggal Lahir</div>
+                        <div class="detail-val">{{ item.candidate.tanggal_lahir if item.candidate else 'N/A' }}</div>
+                      </div>
+  
+                      <div class="detail-item">
+                        <div class="detail-key">Bobot Badan</div>
+                        <div class="detail-val">{{ item.candidate.bobot_badan if item.candidate else 'N/A' }} kg</div>
+                      </div>
+                      <div class="detail-item">
+                        <div class="detail-key">Ringkasan</div>
+                        <div class="detail-val">{{ item.candidate.ringkasan if item.candidate else 'N/A' }}-</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="card-note">Klik kartu ini untuk menjadikannya pilihan aktif.</div>
+              </div>
+              <div class="chart-panel">
+                <div class="chart-title">Rincian Skor</div>
+                <div class="chart-box" id="chart-{{ loop.index }}"></div>
+                <div class="chart-legend">
+                  <div class="legend-row">
+                    <span class="legend-label">Kesehatan</span>
+                    <span class="legend-value">{{ item.breakdown.health|int }}/40</span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-label">Fisik</span>
+                    <span class="legend-value">{{ item.breakdown.physical|int }}/30</span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-label">Genetik</span>
+                    <span class="legend-value">{{ item.breakdown.genetic|int }}/30</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Candidate Info -->
-      <div>
-        <h3 style="margin-bottom: 16px; font-weight: 800; color: var(--text-dark);">Pasangan Rekomendasi</h3>
-        
-        <div class="sheep-info">
-          <div class="sheep-photo">
-              🐑
-          </div>
-
-          <div class="sheep-details">
-            <div class="sheep-id">#{{ candidate.eartag if candidate else 'N/A' }}</div>
-            
-            <div class="detail-item">
-              <div class="detail-key">Jenis Kelamin</div>
-              <div class="detail-val">{{ candidate.kelamin if candidate else 'N/A' }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Kesehatan</div>
-              <div class="detail-val">{{ candidate_health.kesehatan if candidate_health else candidate.kesehatan if candidate else 'N/A' }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Tanggal Lahir</div>
-              <div class="detail-val">{{ candidate.tanggal_lahir if candidate else 'N/A' }}</div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-key">Bobot Badan</div>
-              <div class="detail-val">{{ candidate.bobot_badan if candidate else 'N/A' }} kg</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </label>
+      {% endfor %}
     </div>
 
-    <!-- Reason -->
-    <div style="padding: 0 24px 24px;">
-      <div class="reason-box">
-        <strong>Alasan Pemilihan:</strong><br>
-        {{ match_reason }}
-      </div>
-
-      <!-- Actions -->
-      <div class="button-group">
-        <form action="/recommendation_confirm" method="post" style="flex: 1;">
-          <button type="submit" class="btn btn-confirm" style="width: 100%;">Lanjutkan dengan Pasangan Ini</button>
-        </form>
-        <a href="/camera" class="btn btn-rescan" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Rescan Domba Lain</a>
-      </div>
+    <div class="button-group">
+      <button type="submit" class="btn btn-action btn-confirm confirm-btn">Lanjutkan dengan Pasangan Terpilih</button>
+      <a href="/camera" class="btn btn-action btn-rescan rescan-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center; text-align: center;">Rescan Domba Lain</a>
+      <div class="selection-hint">Default pilihan mengikuti kandidat dengan skor tertinggi.</div>
     </div>
-  </div>
+  </form>
 </div>
 
+{% endblock %}
+
+{% block extra_script %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chartConfigs = [
+      {% for item in candidates %}
+      {
+        selector: '#chart-{{ loop.index }}',
+        total: {{ item.score|int }},
+        series: [{{ item.breakdown.health|int }}, {{ item.breakdown.physical|int }}, {{ item.breakdown.genetic|int }}],
+        labels: ['Kesehatan', 'Fisik', 'Genetik']
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    chartConfigs.forEach((config) => {
+      const target = document.querySelector(config.selector);
+      if (!target) {
+        return;
+      }
+
+      const chart = new ApexCharts(target, {
+        chart: {
+          type: 'donut',
+          height: 160,
+          toolbar: { show: false },
+          animations: { enabled: true, speed: 500 }
+        },
+        series: config.series,
+        labels: config.labels,
+        colors: ['#1d4d35', '#3a9e68', '#d9b44a'],
+        stroke: {
+          width: 0
+        },
+        legend: {
+          show: false
+        },
+        dataLabels: {
+          enabled: false
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '70%',
+              labels: {
+                show: true,
+                name: {
+                  show: true,
+                  fontSize: '14px',
+                  color: '#6b7280',
+                  offsetY: 18
+                },
+                value: {
+                  show: false
+                },
+                total: {
+                  show: true,
+                  label: 'Skor Total',
+                  fontSize: '15px',
+                  fontWeight: 800,
+                  color: '#1a3a2a',
+                  formatter: function (w) {
+                    return `${config.total}/100`;
+                  }
+                }
+              }
+            }
+          }
+        },
+        states: {
+          hover: {
+            filter: {
+              type: 'none'
+            }
+          }
+        },
+        tooltip: {
+          y: {
+            formatter: function (value, { seriesIndex }) {
+              const maxValues = [40, 30, 30];
+              return `${value}/${maxValues[seriesIndex]}`;
+            }
+          }
+        }
+      });
+
+      chart.render();
+    });
+  });
+</script>
 {% endblock %}
