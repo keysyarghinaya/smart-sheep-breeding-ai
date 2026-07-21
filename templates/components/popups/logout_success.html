@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="logoutSuccess"
+    onclick="closePopup('logoutSuccess')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-check-circle"></i>
+        </div>
+
+        <div class="popup-title">
+            Logout Berhasil
+        </div>
+
+        <div class="popup-message">
+            Terima kasih telah menggunakan
+            <br>
+            DombaKu.
+        </div>
+
+        <button
+            class="popup-btn"
+            onclick="closePopup('logoutSuccess')">
+
+            OK
+
+        </button>
+
+    </div>
+
+</div>

@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="matchingSheep"
+    onclick="closePopup('matchingSheep')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-search"></i>
+        </div>
+
+        <div class="popup-title">
+            Tidak Ada Domba
+        </div>
+
+        <div class="popup-message">
+            Tidak ada data domba yang sesuai.
+        </div>
+
+        <button class="popup-btn"
+            onclick="closePopup('matchingSheep')">
+            OK
+        </button>
+
+    </div>
+
+</div>

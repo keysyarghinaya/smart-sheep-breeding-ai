@@ -3,6 +3,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 from firestore_service import (
     get_sheep_by_eartag,
     get_candidate_sheep,
@@ -27,6 +30,14 @@ app.secret_key = "dombaku-secret-2025"
 
 HISTORY_FILE = Path("history.json")
 
+def _rate_limit_handler(request_limit):
+    return render_template("too_many_request.html"), 429
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    on_breach=_rate_limit_handler,
+)
+limiter.init_app(app)
 
 def load_history():
     if HISTORY_FILE.exists():
@@ -66,6 +77,7 @@ def root():
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def login():
     error = None
     if request.method == "POST":
@@ -200,17 +212,22 @@ def confirm():
     ocr_available = request.args.get("ocr_available", "True") in ("True", "true", "1")
     redirect_from = request.args.get("from", "")
 
+    # Popup override from query param (set by confirm_save redirects)
+    popup_param = request.args.get("popup", "")
+
     # If warning not provided explicitly, derive from OCR availability / value
     if not warning:
         if not ocr_available:
             warning = "Pembaca teks otomatis tidak tersedia pada server."
         elif value in ("OCR_NOT_AVAILABLE", "OCR_ERROR", "TIDAK_TERBACA"):
             value = ""
-            warning = "Pembacaan otomatis gagal. Silakan koreksi atau lakukan rescan."
+            # Trigger scan failed popup instead of inline warning
+            if not popup_param:
+                popup_param = "scanFailed"
         else:
             warning = ""
 
-    return render_template("confirm.html", value=value, filename=filename, warning=warning, ocr_available=ocr_available, redirect_from=redirect_from)
+    return render_template("confirm.html", value=value, filename=filename, warning=warning, ocr_available=ocr_available, redirect_from=redirect_from, popup=popup_param)
 
 
 @app.route("/confirm_save", methods=["POST"])
@@ -224,21 +241,21 @@ def confirm_save():
     nama_peternak = session.get("nama_peternak", f"Peternakan {session.get('user_name', '')}")
 
     if not ear_tag:
-        return redirect(url_for("confirm", value="", file=filename, warning="ID ear tag tidak boleh kosong"))
+        return redirect(url_for("confirm", value="", file=filename, popup="emptyId"))
 
     sheep = get_sheep_by_eartag(ear_tag, nama_peternak)
     if sheep is None:
-        return redirect(url_for("confirm", value=ear_tag, file=filename, warning="Tidak terdapat data domba dengan ID ini di peternakan Anda. Periksa kembali atau input manual."))
+        return redirect(url_for("confirm", value=ear_tag, file=filename, popup="sheepNotFound"))
 
     opposite_gender = "Betina" if sheep.get("kelamin") == "Jantan" else "Jantan"
     candidates = get_candidate_sheep(opposite_gender, nama_peternak)
 
     if not candidates:
-        return redirect(url_for("confirm", value=ear_tag, file=filename, warning=f"Tidak ada domba {opposite_gender.lower()} yang tersedia untuk pasangan."))
+        return redirect(url_for("confirm", value=ear_tag, file=filename, popup="partnerNotFound"))
 
     match_result = find_best_match(sheep, candidates, nama_peternak)
     if match_result is None:
-        return redirect(url_for("confirm", value=ear_tag, file=filename, warning="Tidak ada domba yang cocok (kemungkinan constraint lineage)."))
+        return redirect(url_for("confirm", value=ear_tag, file=filename, popup="matchingSheep"))
 
     session["current_sheep"] = sheep
     session["match_result"] = {
@@ -374,6 +391,30 @@ def delete_history(record_id):
 def result_page():
     return render_template("result.html")
 
+
+@app.route("/popup-test")
+def popup_test():
+    return render_template("popup_test.html")
+
+@app.route("/loading")
+def loading():
+    return render_template("loading.html")
+
+@app.route("/error-limit")
+def error_limit():
+    return render_template("error_limit.html")
+
+@app.route("/error-general")
+def error_general():
+    return render_template("error_general.html")
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("not_found.html"), 404
+
+@app.errorhandler(429)
+def too_many_requests(e):
+    return render_template("too_many_request.html"), 429
 
 if __name__ == "__main__":
     print("=" * 50)

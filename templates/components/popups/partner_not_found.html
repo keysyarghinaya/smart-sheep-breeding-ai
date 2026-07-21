@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="partnerNotFound"
+    onclick="closePopup('partnerNotFound')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-heartbreak"></i>
+        </div>
+
+        <div class="popup-title">
+            Pasangan Tidak Tersedia
+        </div>
+
+        <div class="popup-message">
+            Domba belum memiliki pasangan breeding.
+        </div>
+
+        <button class="popup-btn"
+            onclick="closePopup('partnerNotFound')">
+            OK
+        </button>
+
+    </div>
+
+</div>

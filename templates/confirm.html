@@ -59,6 +59,15 @@
   </div>
   {% endif %}
 </div>
+
+<!-- Popup Components -->
+{% include 'components/popups/empty_id.html' %}
+{% include 'components/popups/sheep_not_found.html' %}
+{% include 'components/popups/network_error.html' %}
+{% include 'components/popups/scan_failed.html' %}
+{% include 'components/popups/partner_not_found.html' %}
+{% include 'components/popups/no_matching_sheep.html' %}
+
 {% endblock %}
 
 {% block extra_script %}
@@ -75,10 +84,7 @@
       evt.preventDefault();
       const eartag = document.getElementById('ear_tag').value.trim();
       if (!eartag) {
-        // show friendly inline message instead of alert
-        detail.innerHTML = `<div class="info-box" style="margin-bottom:12px;">ID ear tag kosong. Silakan masukkan ID.</div>`;
-        modal.style.display = 'flex';
-        modalConfirm.style.display = 'none';
+        openPopup('emptyId');
         return;
       }
 
@@ -96,20 +102,13 @@
     
             if (!res.ok) {
               const j = await res.json().catch(()=>({error: 'unknown'}));
-              let friendly = 'Gagal mengambil data domba.';
-              if (j.error === 'not_found') {
-                friendly = 'Data domba tidak ditemukan. Periksa kembali ID atau input manual.';
-              } else if (j.error === 'eartag missing') {
-                friendly = 'ID ear tag tidak diberikan.';
-              } else if (j.error === 'Unauthorized') {
-                friendly = 'Anda tidak berwenang. Silakan login ulang.';
-              } else if (j.error) {
-                friendly = j.error;
-              }
-    
-              detail.innerHTML = `<div class="info-box" style="margin-bottom:50px;margin-top:50px;text-align:center;">${friendly}</div>`;
-              modalConfirm.style.display = 'none';
+              modal.style.display = 'none';
               btn.disabled = false;
+              if (j.error === 'not_found') {
+                openPopup('sheepNotFound');
+              } else {
+                openPopup('networkError');
+              }
               return;
             }
     
@@ -159,8 +158,8 @@
     
             modalConfirm.style.display = 'inline-flex';
           } catch (err) {
-            detail.innerHTML = `<div class="info-box" style="margin-bottom:12px;">⚠ Gagal mengambil data domba. Periksa koneksi.</div>`;
-            modalConfirm.style.display = 'none';
+            modal.style.display = 'none';
+            openPopup('networkError');
           } finally {
             btn.disabled = false;
           }

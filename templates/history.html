@@ -398,6 +398,10 @@
   {% endif %}
 </div>
 
+<!-- Popup Components -->
+{% include 'components/popups/network_error.html' %}
+{% include 'components/popups/sheep_not_found.html' %}
+
 {% endblock %}
 
 {% block extra_script %}
@@ -423,7 +427,7 @@
         location.reload();
       }
     } catch (err) {
-      alert('Gagal menghapus record');
+      openPopup('networkError');
     }
   }
 

@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="networkError"
+    onclick="closePopup('networkError')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-wifi-off"></i>
+        </div>
+
+        <div class="popup-title">
+            Jaringan Bermasalah
+        </div>
+
+        <div class="popup-message">
+            Terjadi kesalahan.<br>
+            Silakan coba kembali.
+        </div>
+
+        <button class="popup-btn"
+            onclick="closePopup('networkError')">
+            OK
+        </button>
+
+    </div>
+
+</div>

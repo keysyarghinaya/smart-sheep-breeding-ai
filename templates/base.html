@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="shortcut icon" href="/static/images/logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -235,7 +236,7 @@
   <div class="navbar-user">
     <div class="user-avatar">{{ user_name[0] | upper if user_name else 'U' }}</div>
     <span>{{ user_name if user_name else 'Unknown' }}</span>
-    <a href="/logout" class="btn-logout">Keluar</a>
+    <button onclick="openLogoutModal()" class="btn-logout">Keluar</button>
   </div>
 </nav>
 
@@ -243,6 +244,23 @@
 <main class="main">
   {% block content %}{% endblock %}
 </main>
+
+
+<!-- Popup Components -->
+{% include 'components/popups/logout_confirm.html' %}
+{% include 'components/popups/logout_success.html' %}
+
+<script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+
+<!-- Auto-trigger popup from server redirect -->
+{% set popup_id = request.args.get("popup") or popup or "" %}
+{% if popup_id %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    openPopup("{{ popup_id }}");
+  });
+</script>
+{% endif %}
 
 {% block extra_script %}{% endblock %}
 </body>
