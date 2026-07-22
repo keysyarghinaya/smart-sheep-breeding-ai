@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="cameraError"
+    onclick="closePopup('cameraError')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-camera-video-off"></i>
+        </div>
+
+        <div class="popup-title">
+            Kamera Tidak Terdeteksi
+        </div>
+
+        <div class="popup-message">
+            Pastikan kamera telah terhubung dan memiliki izin akses.
+        </div>
+
+        <button class="popup-btn"
+            onclick="closePopup('cameraError')">
+            OK
+        </button>
+
+    </div>
+    
+</div>

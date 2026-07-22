@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Loading</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/status.css') }}">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <img
+            src="{{ url_for('static', filename='images/logo.png') }}"
+            class="logo"
+            alt="Logo">
+
+        <h1 class="title">
+            Loading...
+        </h1>
+
+        <p class="message">
+            AI sedang memproses...
+        </p>
+
+    </div>
+
+</body>
+
+</html>

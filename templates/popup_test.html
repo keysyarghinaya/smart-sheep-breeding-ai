@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Popup Test</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+
+    {% include 'components/popups/network_error.html' %}
+    {% include 'components/popups/camera_not_detected.html' %}
+    {% include 'components/popups/scan_failed.html' %}
+    {% include 'components/popups/sheep_not_found.html' %}
+    {% include 'components/popups/no_matching_sheep.html' %}
+    {% include 'components/popups/partner_not_found.html' %}
+    {% include 'components/popups/empty_id.html' %}
+    {% include 'components/popups/empty_text.html' %}
+    {% include 'components/popups/logout_confirm.html' %}
+    {% include 'components/popups/logout_success.html' %}   
+
+    <button onclick="openPopup('networkError')">
+    Network Error
+    </button>
+
+    <button onclick="openPopup('cameraError')">
+    Camera Error
+    </button>
+
+    <button onclick="openPopup('scanFailed')">
+    Scan Failed
+    </button>
+
+    <button onclick="openPopup('sheepNotFound')">
+    Sheep Not Found
+    </button>
+
+    <button onclick="openPopup('matchingSheep')">
+    No Matching Sheep
+    </button>
+
+    <button onclick="openPopup('partnerNotFound')">
+    Partner Not Found
+    </button>
+
+    <button onclick="openPopup('emptyId')">
+    Empty ID
+    </button>
+
+    <button onclick="openPopup('emptyText')">
+    Empty Text
+    </button>
+
+    <button onclick="openPopup('logoutConfirm')">
+        Logout Confirm
+    </button>
+
+    <button onclick="openPopup('logoutSuccess')">
+        Logout Success
+    </button>
+
+</body>
+</html>

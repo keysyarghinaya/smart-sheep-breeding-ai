@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+
+<div
+    class="popup-overlay"
+    id="logoutConfirm"
+    onclick="closePopup('logoutConfirm')">
+
+    <div
+        class="popup"
+        onclick="event.stopPropagation()">
+
+        <div class="popup-icon">
+            <i class="bi bi-box-arrow-right"></i>
+        </div>
+
+        <div class="popup-title">
+            Logout
+        </div>
+
+        <div class="popup-message">
+            Apakah kamu yakin ingin logout?
+        </div>
+
+        <div class="popup-buttons">
+
+            <button
+                class="popup-btn"
+                onclick="closePopup('logoutConfirm')">
+
+                Tidak
+
+            </button>
+
+            <button
+                class="popup-btn popup-btn-red"
+                onclick="confirmLogout()">
+
+                Ya
+
+            </button>
+            
+        </div>
+
+    </div>
+
+</div>

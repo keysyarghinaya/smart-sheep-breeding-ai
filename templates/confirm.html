@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Konfirmasi ID Ear Tag – DombaKu{% endblock %}
+
+{% block extra_style %}
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .modal-spinner { width:36px; height:36px; border:3px solid #e5e7eb; border-top-color:#3a9e68; border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 12px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <a href="/dashboard" class="btn-back">←</a>
+  {% if redirect_from == 'capture' %}
+    <h1 class="page-title">Konfirmasi ID Ear Tag</h1>
+    <!-- <p class="page-subtitle">Pastikan ID yang terbaca sudah benar sebelum menyimpan.</p> -->
+  {% else %}
+    <h1 class="page-title">Input ID Ear Tag</h1>
+    <!-- <p class="page-subtitle">Masukkan ID ear tag secara manual.</p> -->
+  {% endif %}
+</div>
+
+<div style="max-width:720px; margin: 0 auto;">
+  {% if warning %}
+  <div class="info-box" style="margin-bottom:16px;">{{ warning }}</div>
+  {% endif %}
+
+  <form action="/confirm_save" method="post">
+    <div style="margin-bottom:12px;">
+      <label for="ear_tag">ID Ear Tag</label>
+      <input type="text" id="ear_tag" name="ear_tag" value="{{ value }}" autocomplete="off" style="width:100%; padding:12px; font-size:16px; margin-top:6px;" />
+    </div>
+
+    <input type="hidden" name="filename" value="{{ filename }}" />
+    <input type="hidden" name="ocr_available" value="{{ 'True' if ocr_available else 'False' }}" />
+
+    <div style="display:flex; gap:12px; margin-top:10px;">
+        <button type="submit" class="btn btn-primary btn-capture" id="btnContinue">Lanjut</button>
+      <a href="/camera" class="btn btn-warning btn-capture">{% if redirect_from == 'capture' %} Rescan {% else %} Scan {% endif %}</a>
+    </div>
+  </form>
+
+    <!-- Modal: detail sheep confirmation -->
+    <div id="sheepModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:1200;">
+      <div style="background:#fff; border-radius:12px; width:720px; max-width:95%; padding:18px;">
+        <h3 style="margin-bottom:14px;">Detail Domba</h3>
+        <div id="sheepDetail" style="max-height:60vh; overflow:auto; font-size:14px; color:var(--text-dark);"></div>
+        <div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end; margin-top:20px;">
+          <button id="modalCancel" class="btn btn-outline">Batal</button>
+          <button id="modalConfirm" class="btn btn-primary">Konfirmasi & Lanjut</button>
+        </div>
+      </div>
+    </div>
+
+  {% if filename %}
+  <div style="margin-top:18px;">
+    <strong>File capture:</strong>
+    <div style="margin-top:8px;"><img src="/captures/{{ filename }}" style="max-width:100%; border-radius:8px; border:1px solid var(--border);" /></div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Popup Components -->
+{% include 'components/popups/empty_id.html' %}
+{% include 'components/popups/sheep_not_found.html' %}
+{% include 'components/popups/network_error.html' %}
+{% include 'components/popups/scan_failed.html' %}
+{% include 'components/popups/partner_not_found.html' %}
+{% include 'components/popups/no_matching_sheep.html' %}
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  (function(){
+    const form = document.querySelector('form[action="/confirm_save"]');
+    const btn = document.getElementById('btnContinue');
+    const modal = document.getElementById('sheepModal');
+    const detail = document.getElementById('sheepDetail');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalConfirm = document.getElementById('modalConfirm');
+
+    form.addEventListener('submit', async function(evt){
+      evt.preventDefault();
+      const eartag = document.getElementById('ear_tag').value.trim();
+      if (!eartag) {
+        openPopup('emptyId');
+        return;
+      }
+
+      btn.disabled = true;
+      // show modal immediately with spinner for better UX
+      modal.style.display = 'flex';
+      modalConfirm.style.display = 'none';
+      detail.innerHTML = `<div style="padding:24px;text-align:center;"><div class=\"modal-spinner\"></div><div style=\"margin-top:6px;font-weight:600;color:var(--text-muted);\">Memuat data domba…</div></div>`;
+
+      setTimeout(async () => {
+          try {
+            const params = new URLSearchParams();
+            params.set('eartag', eartag);
+            const res = await fetch('/api/sheep?' + params.toString());
+    
+            if (!res.ok) {
+              const j = await res.json().catch(()=>({error: 'unknown'}));
+              modal.style.display = 'none';
+              btn.disabled = false;
+              if (j.error === 'not_found') {
+                openPopup('sheepNotFound');
+              } else {
+                openPopup('networkError');
+              }
+              return;
+            }
+    
+            const data = await res.json();
+            const s = data.sheep;
+            // Build detail view
+            detail.innerHTML = `
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Eartag</strong>
+                    <div>${s.eartag || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Kelamin</strong>
+                    <div>${s.kelamin || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Bobot</strong>
+                    <div>${s.bobot_badan || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Kesehatan</strong>
+                    <div>${s.kesehatan || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Induk Betina</strong>
+                    <div>${s.induk_betina || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Induk Jantan</strong>
+                    <div>${s.induk_jantan || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Nama Peternak</strong>
+                    <div>${s.nama_peternak || '-'}</div>
+                </div>
+                <div>
+                    <strong style="display:block; margin-bottom: 6px;">Tanggal Lahir</strong>
+                    <div>${s.tanggal_lahir || '-'}</div>
+                </div>
+                <div style="grid-column:1 / -1">
+                    <strong style="display:block; margin-bottom: 6px;">Keterangan</strong>
+                    <div>${s.keterangan || '-'}</div>
+                </div>
+              </div>
+            `;
+    
+            modalConfirm.style.display = 'inline-flex';
+          } catch (err) {
+            modal.style.display = 'none';
+            openPopup('networkError');
+          } finally {
+            btn.disabled = false;
+          }
+      }, 500); // simulate network delay for better UX (remove in production)
+    });
+
+    modalCancel.addEventListener('click', ()=>{ modal.style.display = 'none'; });
+
+    modalConfirm.addEventListener('click', ()=>{
+      // Submit original form normally so server-side flow remains unchanged
+      form.submit();
+    });
+  })();
+</script>
+{% endblock %}
