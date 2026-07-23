@@ -8,12 +8,13 @@ from flask_limiter.util import get_remote_address
 from firestore_service import (
     get_sheep_by_eartag,
     get_candidate_sheep,
-    get_top_matches,
     get_user_by_email,
     add_marriage_record,
     get_marriage_history,
     delete_marriage_record,
 )
+
+from matching_service import get_top_matches
 
 from camera_service import (
     CAPTURE_DIR,
