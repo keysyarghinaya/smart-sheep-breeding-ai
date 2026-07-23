@@ -310,3 +310,70 @@ def find_best_match(sheep: Dict, candidates: List[Dict], nama_peternak: str) -> 
         "breakdown": best_match["breakdown"],
         "health_record": best_match["health_record"],
     }
+
+def add_marriage_record(record: Dict, nama_peternak: str) -> Optional[str]:
+    """
+    Tambah record perkawinan ke collection riwayatrekomendasi.
+    Returns document ID, or None.
+    """
+    db = get_db()
+    if db is None:
+        return None
+
+    try:
+        doc_ref = db.collection("riwayatrekomendasi").document()
+        doc_ref.set({
+            "nama_peternak": nama_peternak,
+            "sheep_eartag": record.get("sheep_eartag"),
+            "candidate_eartag": record.get("candidate_eartag"),
+            "match_score": record.get("match_score"),
+            "timestamp": record.get("timestamp"),
+            "filename": record.get("filename"),
+            "created_at": firestore.SERVER_TIMESTAMP,
+        })
+        return doc_ref.id
+    except Exception as e:
+        print(f"[ERROR] Add marriage record failed: {e}")
+        return None
+
+
+def get_marriage_history(nama_peternak: str) -> List[Dict]:
+    """
+    Ambil semua record perkawinan untuk peternakan user,
+    diurut dari terbaru.
+    """
+    db = get_db()
+    if db is None:
+        return []
+
+    try:
+        query = db.collection("riwayatrekomendasi").where(
+            "nama_peternak", "==", nama_peternak
+        ).order_by("created_at", direction=firestore.Query.DESCENDING)
+
+        records = []
+        for doc in query.stream():
+            data = doc.to_dict()
+            data["_id"] = doc.id
+            records.append(data)
+        return records
+    except Exception as e:
+        print(f"[ERROR] Get marriage history failed: {e}")
+        return []
+
+
+def delete_marriage_record(record_id: str) -> bool:
+    """
+    Hapus satu record perkawinan berdasarkan doc ID.
+    Returns True jika berhasil, False jika gagal.
+    """
+    db = get_db()
+    if db is None:
+        return False
+
+    try:
+        db.collection("riwayatrekomendasi").document(record_id).delete()
+        return True
+    except Exception as e:
+        print(f"[ERROR] Delete marriage record failed: {e}")
+        return False

@@ -380,7 +380,7 @@
         <!-- Action Buttons -->
         <div style="padding: 0 20px 16px; display: none;" class="action-buttons-container">
           <div class="action-buttons">
-            <button class="btn-small btn-danger" onclick="deleteRecord('{{ record.id }}')" style="color: #dc2626;">Hapus</button>
+            <button class="btn-small btn-danger" onclick="deleteRecord('{{ record._id }}')" style="color: #dc2626;">Hapus</button>
             <button class="btn-small btn-primary" onclick="duplicateRecord('{{ record.sheep_eartag or record.ear_tag_id }}')" style="color: #fff;">Coba Pasangan Lain</button>
           </div>
         </div>

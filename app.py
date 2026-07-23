@@ -1,7 +1,6 @@
+import re
 from flask import Flask, render_template, Response, redirect, url_for, jsonify, request, session
-import json
 from datetime import datetime
-from pathlib import Path
 
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -11,6 +10,9 @@ from firestore_service import (
     get_candidate_sheep,
     get_top_matches,
     get_user_by_email,
+    add_marriage_record,
+    get_marriage_history,
+    delete_marriage_record,
 )
 
 from camera_service import (
@@ -27,7 +29,6 @@ from ocr_service import run_ocr, OCR_AVAILABLE
 app = Flask(__name__)
 app.secret_key = "dombaku-secret-2025"
 
-HISTORY_FILE = Path("history.json")
 TOP_MATCH_LIMIT = 5
 
 def _rate_limit_handler(request_limit):
@@ -39,29 +40,10 @@ limiter = Limiter(
 )
 limiter.init_app(app)
 
-def load_history():
-    if HISTORY_FILE.exists():
-        with open(HISTORY_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-
 # Inject user_name into all templates to fix 'Unknown' navbar issue
 @app.context_processor
 def inject_user():
     return {"user_name": session.get("user_name")}
-
-
-def save_history(records):
-    with open(HISTORY_FILE, "w") as f:
-        json.dump(records, f, indent=2)
-
-
-def append_history(record):
-    records = load_history()
-    records.insert(0, record)
-    records = records[:100]
-    save_history(records)
 
 
 # ═════════════════════════════════════════════════════════════════════════════=
@@ -83,6 +65,11 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
+
+        pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(pattern, email):
+            error = "Email tidak valid"
+            return render_template("login.html", error=error)
 
         # Try Firestore users collection first
         user_doc = get_user_by_email(email)
@@ -335,7 +322,6 @@ def recommendation_confirm():
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     record = {
-        "id": timestamp,
         "filename": input_filename if input_filename else f"{timestamp}.jpg",
         "sheep_eartag": sheep.get("eartag"),
         "candidate_eartag": selected_match["candidate_eartag"],
@@ -343,7 +329,8 @@ def recommendation_confirm():
         "timestamp": datetime.now().strftime("%d %b %Y, %H:%M:%S"),
     }
 
-    append_history(record)
+    nama_peternak = session.get("nama_peternak", session.get("user_name", ""))
+    add_marriage_record(record, nama_peternak)
 
     session.pop("current_sheep", None)
     session.pop("match_results", None)
@@ -365,7 +352,8 @@ def serve_capture(filename):
 def history():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
-    records = load_history()
+    nama_peternak = session.get("nama_peternak", session.get("user_name", ""))
+    records = get_marriage_history(nama_peternak)
     return render_template("history.html", records=records)
 
 
@@ -373,7 +361,8 @@ def history():
 def history_json():
     if not session.get("logged_in"):
         return jsonify({"records": []})
-    return jsonify({"records": load_history()})
+    nama_peternak = session.get("nama_peternak", session.get("user_name", ""))
+    return jsonify({"records": get_marriage_history(nama_peternak)})
 
 
 @app.route('/camera_stop', methods=['POST'])
@@ -409,10 +398,8 @@ def api_sheep():
 def delete_history(record_id):
     if not session.get("logged_in"):
         return jsonify({"success": False}), 401
-    records = load_history()
-    records = [r for r in records if r["id"] != record_id]
-    save_history(records)
-    return jsonify({"success": True})
+    success = delete_marriage_record(record_id)
+    return jsonify({"success": success})
 
 
 @app.route("/result")
